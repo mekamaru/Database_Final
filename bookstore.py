@@ -4,6 +4,7 @@ from tkinter import ttk #Ttk widgets gives the application an improved look and 
 from tkinter import messagebox
 import sqlite3
 import os
+import sys
 
 
 # common variables
@@ -26,7 +27,6 @@ bg_button = "#FFFFFF"
 #size
 normal_geo = "520x300"
 list_geo = "1920x1080"
-
 
 #set database
 db=sqlite3.connect("bookstore.db")
@@ -113,7 +113,10 @@ class loginGUI:
         self.login_window = tkinter.Frame(height = 170, width = 520, bg=bg_normal)
         self.creacc_window = tkinter.Frame(height = 170, width = 520, bg=bg_normal)
 
+        self.style = ttk.Style()
+        self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
         
+
         self.cursor = db.cursor()
 
         def crelines():
@@ -164,6 +167,13 @@ class loginGUI:
                 self.m_window.destroy()
                 self.cursor.close()
                 storemainGUI(user_id)
+
+        def on_closing():
+            self.m_window.destroy()
+            db.close()
+            print("Closing!")
+            sys.exit()
+
                 
                 
     #Set the appearance of login window
@@ -221,11 +231,11 @@ class loginGUI:
         self.loginlg_button = ttk.Button(self.login_window, command=loginacc, text="Login", style="TButton", width=20)
         self.loginlg_button.place(x=260, y=40)
 
+        self.m_window.protocol("WM_DELETE_WINDOW", on_closing)
+
         self.login_window.place(x=0,y=130)
 
-        self.style = ttk.Style()
-        self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
-        
+       
 
         # Loop the window
         self.login_window.mainloop()
@@ -1605,11 +1615,11 @@ class BookManageGUI():
             # Creating the frame for list view (as same as book list in BuyBookGUI)
             if flag == True: #edit book
 
-                canvas = tkinter.Canvas(self.book_window, bg =bg_normal, height = 600, width= 1000)
+                canvas = tkinter.Canvas(self.book_window, bg =bg_normal, height = 850, width= 1000)
 
                # Scrollbar を生成して配置
                 bar = tkinter.Scrollbar(self.book_window, orient=tkinter.VERTICAL)
-                bar.pack(side=tkinter.RIGHT, ipady = 600)
+                bar.pack(side=tkinter.RIGHT, pady=30, ipady = 420, anchor = tkinter.N)
                 bar.config(command=canvas.yview)
 
                 canvas.config(yscrollcommand=bar.set)#スクロール範囲
@@ -1636,16 +1646,16 @@ class BookManageGUI():
                 for bk in bks:
                     ids.append(bk[0])
                     txt = ("BookID: %s"%str(bk[0]) + "/ Title: %s"%str(bk[1]) + "/ Author: %s"%str(bk[2]) + "/ Publisher: %s"%str(bk[3]) + "/ Price: %s"%str(bk[4]) + "/ Availability: %s"%str(bk[5]))
-                    bt = tkinter.Radiobutton(frame, text=txt, bg =bg_normal, variable = var, value = ind, command=set_bookid)
+                    bt = tkinter.Radiobutton(frame, text=txt, bg =bg_normal, variable = var, value = ind, command=set_bookid, anchor="w")
                     ind = ind + 1
                     bt.pack(fill=tkinter.X)
 
                 canvas.pack(side=tkinter.TOP, pady= 50)
 
                 self.chooseone = tkinter.Label(self.book_window, text = "Choose a book for edit", font=font_normal_bold, fg=fc_label, bg=bg_label)
-                self.chooseone.place(x=554, y=10)
+                self.chooseone.place(relx=0.5, y=20, anchor='center')
                 self.cancel_button.lift()
-                self.cancel_button.place(x=550, y=670)
+                self.cancel_button.place(relx=0.5, y=950, anchor='center')
 
             else: #add new book
                 placelines(addbook, "Save New Book")
