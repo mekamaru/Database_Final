@@ -2,6 +2,7 @@
 import tkinter
 from tkinter import ttk #Ttk widgets gives the application an improved look and feel
 from tkinter import messagebox
+from typing import Callable
 import sqlite3
 import os
 import sys
@@ -48,8 +49,10 @@ def create_window(self, title: str, geo: str):
     self.window.geometry(geo)
     self.window.config(bg=bg_normal)
     self.window.protocol("WM_DELETE_WINDOW", lambda: on_closing(self.window))
-    self.style = ttk.Style()
 
+    self.style = ttk.Style()
+    self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
+    self.style.configure("logout.TButton", font=font_normal, foreground=fg_logout, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
     return self.window
 
 def create_label(window: tkinter.Tk, title: str, x: int, y: int):
@@ -69,3 +72,15 @@ def create_entry(window: tkinter.Tk, x: int, y: int, width: int):
     entry.place(x=x, y=y)
 
     return entry
+
+def create_button_xy(window: tkinter.Tk, title: str, command: Callable[[], None], style: str, x: int, y: int, width: int):
+    button = ttk.Button(window, command = command, text = title, style = style, width = width)
+    button.place(x = x, y = y)
+
+    return button
+
+def create_button_center(window: tkinter.Tk, title: str, command: Callable[[], None], style: str, y: int, width: int):
+    button = ttk.Button(window, command = command, text = title, style = style, width = width)
+    button.place(relx=0.5, y = y, anchor='center')
+
+    return button

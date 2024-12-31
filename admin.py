@@ -5,11 +5,11 @@ from tkinter import messagebox
 import sqlite3
 import os
 
-def BookManageGUI(flag):
+def BookManageGUI(self, flag):
     print("This is BookManageGUI!")
 
-def UserManageGUI(flag):
+def UserManageGUI(self, flag):
     print("This is UserManageGUI!")
 
-def ViewOrderGUI():
+def ViewOrderGUI(self):
     print("This is ViewOrderGUI")
