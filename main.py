@@ -119,7 +119,7 @@ class LoginGUI:
         self.creacc_window = tkinter.Frame(height = 170, width = 520, bg=bg_normal)
 
         #Create labels and entries
-        self.welcome = create_title(self.m_window, "WELCOME", 20)
+        self.login_title = create_title(self.m_window, "WELCOME", 20)
 
         self.id_label = create_label(self.login_window, "User ID:", 5, 0)
         self.id_entry = create_entry(self.login_window, 190, 0, 20)
@@ -221,7 +221,7 @@ class StoreMainGUI():
         self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
 
         #Create labels and entries
-        self.welcome_label = create_title(self.store_window, ("Welcome! %s" %self.username), 40)
+        self.store_title = create_title(self.store_window, ("Welcome! %s" %self.username), 40)
 
         #Set the actions on this GUI
         def buybook():
@@ -264,16 +264,66 @@ class AdminGUI():
         #Set geometry
         #Set background color
         #Place the window
-        self.admin_window = create_window(self, "Admin Main". normal_geo)
+        self.admin_window = create_window(self, "Admin Main", normal_geo)
         #Set style
         self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
         self.style.configure("logout.TButton", font=font_normal, foreground=fg_logout, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
 
         #Create labels and entries
-
+        self.admin_title = create_title(self.admin_window, "Admin Panel", 15)
         #Set the actions on this GUI
+        def addbook():
+            self.admin_window.destroy()
+            self.cursor.close()
+            BookManageGUI(False)
+            AdminGUI()
+
+        def editbook():
+            self.admin_window.destroy()
+            self.cursor.close()
+            BookManageGUI(True)
+            AdminGUI()
+
+        def adduser():
+            self.admin_window.destroy()
+            self.cursor.close()
+            UserManageGUI(False)
+            AdminGUI()
+
+        def edituser():
+            self.admin_window.destroy()
+            self.cursor.close()
+            UserManageGUI(True)
+            AdminGUI()
+
+        def vieworder():
+            self.admin_window.destroy()
+            self.cursor.close()
+            ViewOrderGUI()
+            AdminGUI()
+
+        def logout():
+            messagebox.showwarning(title="Logout", message="You have been logged out.")
+            self.cursor.close()
+            self.admin_window.destroy()
+            LoginGUI()
+
         #Create buttons
+        self.adduser_button = ttk.Button(self.admin_window, command=adduser, text="Save New User Account", style="TButton", width=20)
+        self.adduser_button.place(relx=0.5,  y=50, anchor='center')
+        self.edituser_button = ttk.Button(self.admin_window, command=edituser, text="Edit User Account", style="TButton", width=20)
+        self.edituser_button.place(relx=0.5,  y=90, anchor='center')
+        self.addbook_button = ttk.Button(self.admin_window, command=addbook, text="Save New Book", style="TButton", width=20)
+        self.addbook_button.place(relx=0.5,  y=130, anchor='center')
+        self.editbook_button = ttk.Button(self.admin_window, command=editbook, text="Edit Book", style="TButton", width=20)
+        self.editbook_button.place(relx=0.5,  y=170, anchor='center')
+        self.vieworder_button = ttk.Button(self.admin_window, command=vieworder, text="View Orders", style="TButton", width=20)
+        self.vieworder_button.place(relx=0.5,  y=210, anchor='center')
+        self.Logout_button = ttk.Button(self.admin_window, command=logout, text="Logout", style="logout.TButton", width=20)
+        self.Logout_button.place(relx=0.5,  y=250, anchor='center')
+
         #Loop the window
+        self.admin_window.mainloop()
 
 LoginGUI()
 
