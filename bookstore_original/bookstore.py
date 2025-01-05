@@ -1432,12 +1432,12 @@ class UserManageGUI():
             
             # Creating the frame for list view (as same as book list in BuyBookGUI)     
             if flag == True: #edit user
-
+#############################################
                 canvas = tkinter.Canvas(self.acc_window, bg =bg_normal, height = 600, width= 1000)
 
                # Scrollbar を生成して配置
                 bar = tkinter.Scrollbar(self.acc_window, orient=tkinter.VERTICAL)
-                bar.pack(side=tkinter.RIGHT, ipady = 600)
+                bar.pack(side=tkinter.RIGHT, pady=0, ipady = 600, anchor = tkinter.N)
                 bar.config(command=canvas.yview)
 
                 canvas.config(yscrollcommand=bar.set) #スクロール範囲
@@ -1457,19 +1457,19 @@ class UserManageGUI():
                 # 複数の Button Widget 生成し、Frame上に配置
                 self.cursor.execute('SELECT * FROM accounts')
                 accs = self.cursor.fetchall()
-                canvas.config(scrollregion=(0,0,50,len(accs)*55))
+                canvas.config(scrollregion=(0,0,canvas.cget('width'),len(accs)*25))
                 var = tkinter.IntVar()
                 ids =[]
                 ind = 0
                 for bk in accs:
                     ids.append(bk[0])
                     txt = ("UserID: %s"%str(bk[0]) + "/ Password: %s"%str(bk[1]) + "/ Firstname: %s"%str(bk[2]) + "/ Lastname: %s"%str(bk[3]) + "/ Email: %s"%str(bk[4]) + "/ Payment method: %s"%str(bk[5]))
-                    bt = tkinter.Radiobutton(frame, text=txt, bg =bg_normal, variable = var, value = ind, command=set_userid)
+                    bt = tkinter.Radiobutton(frame, text=txt, bg =bg_normal, variable = var, value = ind, command=set_userid, anchor="w")
                     ind = ind + 1
                     bt.pack(fill=tkinter.X)
 
                 canvas.pack(side=tkinter.TOP, pady= 50)
-
+#############################################
                 self.chooseone = tkinter.Label(self.acc_window, text = "Choose an account for edit", font=font_normal_bold, fg=fc_label, bg=bg_label)
                 self.chooseone.place(x=554, y=10)
                 self.cancel_button.lift()

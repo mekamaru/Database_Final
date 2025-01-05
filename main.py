@@ -259,25 +259,25 @@ class AdminGUI():
         def addbook():
             self.admin_window.destroy()
             self.cursor.close()
-            BookManageGUI(self, False)
+            BookManageGUI(False)
             AdminGUI()
 
         def editbook():
             self.admin_window.destroy()
             self.cursor.close()
-            BookManageGUI(self, True)
+            BookManageGUI(True)
             AdminGUI()
 
         def adduser():
             self.admin_window.destroy()
             self.cursor.close()
-            UserManageGUI(self, False)
+            UserManageGUI(False)
             AdminGUI()
 
         def edituser():
             self.admin_window.destroy()
             self.cursor.close()
-            UserManageGUI(self, True)
+            UserManageGUI(True)
             AdminGUI()
 
         def vieworder():
@@ -303,7 +303,8 @@ class AdminGUI():
         #Loop the window
         self.admin_window.mainloop()
 
-LoginGUI()
+if __name__ == "__main__":
+    LoginGUI()
 
         #Set the cursor for db
         #self.cursor = db.cursor()

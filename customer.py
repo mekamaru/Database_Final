@@ -4,6 +4,7 @@ from tkinter import ttk #Ttk widgets gives the application an improved look and 
 from tkinter import messagebox
 import sqlite3
 import os
+from variables import *
 
 def BuyBooksGUI(user_id):
     print("This is BuyBookGUI!\n Login by ", str(user_id), ".")
