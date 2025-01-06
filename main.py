@@ -260,31 +260,26 @@ class AdminGUI():
             self.admin_window.destroy()
             self.cursor.close()
             BookManageGUI(False)
-            AdminGUI()
 
         def editbook():
             self.admin_window.destroy()
             self.cursor.close()
             BookManageGUI(True)
-            AdminGUI()
 
         def adduser():
             self.admin_window.destroy()
             self.cursor.close()
             UserManageGUI(False)
-            AdminGUI()
 
         def edituser():
             self.admin_window.destroy()
             self.cursor.close()
             UserManageGUI(True)
-            AdminGUI()
 
         def vieworder():
             self.admin_window.destroy()
             self.cursor.close()
-            ViewOrderGUI(self)
-            AdminGUI()
+            ViewOrderGUI()
 
         def logout():
             messagebox.showwarning(title="Logout", message="You have been logged out.")

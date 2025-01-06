@@ -329,28 +329,367 @@ class UserManageGUI:
             self.acc_window.mainloop()
 
         setlist()
-def ViewOrderGUI(self):
-    print("This is ViewOrderGUI")
 
-    #Set the cursor for db
-    #self.cursor = db.cursor()
+
+class ViewOrderGUI():
+    def __init__(self): #storemainGUI()に呼び出されるGUIは全部user_idを参照する
+        self.cursor = db.cursor()
+
+    #Set the appearance
+        self.vieworder_window = create_window(self, "View Order", multiframe_geo) #bookcatalogue一覧から選ぶ -> 選択画面がメインウィンドウのGUI(user_id)
+
+        self.vieworder_window_top = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #カタログのフィルタリング →第二フレーム
+        self.vieworder_window_bot = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #合計金額の計算　→　第三フレーム
+        self.vieworder_detail_bot = tkinter.Frame(height=40, width = 820, bg = bg_normal) #支払い方法の入力　→　オーバーｒｙその③
+
+        # Creating the frame for list view (as same as book list in BuyBookGUI)
+        
+        #一覧スクロール　→　メインに直付け・第一フレーム（キャンバス内）
+
+        # Scrollbar を生成して配置
+        self.canvas = tkinter.Canvas(self.vieworder_window, bg =bg_normal, height = 460, width= multiframe_w)
+        self.bar = tkinter.Scrollbar(self.vieworder_window, orient=tkinter.VERTICAL)
+        
+        self.bar.config(command=self.canvas.yview)
+
+        self.canvas.config(yscrollcommand=self.bar.set)
+        
+    #Set the actions
+        def cancel():
+             self.cursor.close()
+             self.vieworder_window.destroy()
+             from main import AdminGUI
+             AdminGUI()
+        
+        def createorderslist(conn):
+            def viewdetail():
+                def backtolist():
+                    self.vieworder_detail.destroy()
+                    self.vieworder_detail_bot.place_forget()
+                    
+                    createorderslist(self.cursor.execute('SELECT * FROM orders'))
+
+                self.orderlist.destroy()
+                self.vieworder_detail = tkinter.Frame(self.canvas, height=460, width = 820, bg = bg_label)
+                self.canvas.create_window((0,0), window=self.vieworder_detail, anchor=tkinter.NW, width=self.canvas.cget('width'))
+                self.canvas.config(height = 460, width = 820)
+
+                txt = ("Order Detail\n==================================================================="
+                            +"\nOrdered Books:\n===================================================================")
+                order = self.cursor.execute('SELECT * FROM orders WHERE order_id =?', [self.var.get(),]).fetchone()
+                booklist = [int(x) for x in order[2].split(":")]
+                for i in range(0, len(booklist)):
+                    if booklist[i] != 0:
+                        book = self.cursor.execute('SELECT * FROM books WHERE book_id =?', [i,]).fetchone()
+                        txt = txt + ("\nTitle: " + str(book[1]) + "\nAuthor: " + str(book[2]) + "\nPublisher: " + str(book[3])
+                                     + "\nPrice: " + str(book[4]) + "\nQty: " + str(booklist[i]))
+                        txt = txt + ("\n===================================================================")
+                         
+                txt = txt + ("\nCustomer Information:\n===================================================================")
+                order = self.cursor.execute('SELECT * FROM orders WHERE order_id =?', [self.var.get(),]).fetchone()
+                shipinfo = order[4].split(":")
+                txt = txt + ("\nFull Name: " + str(shipinfo[0]) +
+                            "\nShipping Address:" +
+                            "\n Street: " + str(shipinfo[1]) +
+                            "\n City: " + str(shipinfo[2]) +
+                            "\n State: " + str(shipinfo[3]) +
+                            "\n Country: " + str(shipinfo[4]) +
+                            "\n Zip: " + str(shipinfo[5]))
+                txt = txt + ("\n===================================================================")
+                txt = txt + ("\nPayment Information:\n===================================================================")
+                order = self.cursor.execute('SELECT * FROM orders WHERE order_id =?', [self.var.get(),]).fetchone()
+                payinfo = order[5].split(":")
+                txt = txt + ("\nPayment Method: " + str(payinfo[0]))
+                if payinfo[0] == "Credit/Debit Card":
+                    txt = txt + ("\nName on Card: " + str(payinfo[2]) +
+                            "\nCard Number: " + str(payinfo[3]) +
+                            "\nCard Exp: " + str(payinfo[4]) + "/" + str(payinfo[5]) +
+                            "\nBilling Address:" +
+                            "\n Street: " + str(payinfo[6]) +
+                            "\n City: " + str(payinfo[7]) +
+                            "\n State: " + str(payinfo[8]) +
+                            "\n Country: " + str(payinfo[9]) +
+                            "\n Zip: " + str(payinfo[10]) +
+                            "\n Phone: " + str(payinfo[11]))
+                elif payinfo[0] == "Bank Check":
+                    txt = txt + ("\nName: " + str(payinfo[2]) +
+                            "\nBank Type: " + str(payinfo[3]) +
+                            "\nRouting Number: " + str(payinfo[4]) +
+                            "\nAccount Number: " + str(payinfo[5]))
+                else:
+                    txt = txt + ("\nYou must pay when you receive the box.")
+
+                info = create_label_frame_small(self.vieworder_detail, txt)
+                info.place(x=0,y=0)
+                self.canvas.config(scrollregion=(0,0,50,len(booklist)*30))
+                self.vieworder_detail.config(height = len(booklist)*30)
+                self.bar.pack(side=tkinter.RIGHT,  pady=0, ipady =0, fill =tkinter.Y)
+                self.canvas.pack(side=tkinter.TOP, pady=0)
+
+                self.backtolist_button = create_button_xy(self.vieworder_detail_bot, "Back to View Order", backtolist, "TButton", 300, 5, 20)
+                self.vieworder_detail_bot.place(x=0,y=460)
+            
+            self.var = tkinter.IntVar(value = 0)
+            self.orderlist = tkinter.Frame(self.canvas,height = 460, width = multiframe_w, bg = bg_label)
+            self.canvas.config(height = 420)
+            self.canvas.create_window((0,0), window=self.orderlist, anchor=tkinter.NW, width=self.canvas.cget('width'))
+            self.selectedorders = conn.fetchall()
+            self.canvas.config(scrollregion=(0,0,50,1000 + len(self.selectedorders)*30)) #スクロール範囲
+
+            oid_head = create_label_frame_small(self.orderlist, "Order ID")
+            uid_head = create_label_frame_small(self.orderlist, "User ID")
+            qty_head = create_label_frame_small(self.orderlist, "Total Qty")
+            price_head = create_label_frame_small(self.orderlist, "Total Price")
+            method_head = create_label_frame_small(self.orderlist, "Payment Method")
+            detail_head = create_label_frame_small(self.orderlist, "Show Detail")
+
+            oid_head.grid(row = 0, column = 1)
+            uid_head.grid(row = 0, column = 2)
+            qty_head.grid(row = 0, column = 3)
+            price_head.grid(row = 0, column = 4)
+            method_head.grid(row = 0, column = 5)
+            detail_head.grid(row = 0, column = 6)
+            
+            for order in self.selectedorders:
+                print(str(order[0]))
+                oid = create_label_frame_small(self.orderlist, str(order[0]))
+                uid = create_label_frame_small(self.orderlist, str(order[1]))
+                qty = create_label_frame_small(self.orderlist, str(sum([int(x) for x in order[2].split(":")])))
+                price = create_label_frame_small(self.orderlist, ("$" +str(order[3])))
+                method = create_label_frame_small(self.orderlist, str(order[5].split(":")[0]))
+                detail = tkinter.Radiobutton(self.orderlist, variable=self.var, value=int(order[0]), command = viewdetail, fg=fc_label, bg=bg_label)
+                detail.deselect()
+
+                grid_row = int(order[0]) + 1
+                oid.grid(row = grid_row, column = 1, sticky = tkinter.W)
+                uid.grid(row = grid_row, column = 2, sticky = tkinter.W)
+                qty.grid(row = grid_row, column = 3, sticky = tkinter.W)
+                price.grid(row = grid_row, column = 4, sticky = tkinter.W)
+                method.grid(row = grid_row, column = 5, sticky = tkinter.W)
+                detail.grid(row = grid_row, column = 6)
+
+            self.bar.pack(side=tkinter.RIGHT, pady=30, ipady =195, anchor = tkinter.N)
+            self.canvas.pack(side=tkinter.TOP, pady = 35)
+
+            self.vieworder_head = create_label_frame(self.vieworder_window_top, "View Order", 360, 0)
+            self.vieworder_window_top.place(x=0,y=0)
+
+            self.cancel_button = ttk.Button(self.vieworder_window_bot, command=cancel, text="Cancel", style="TButton", width=15)
+            self.cancel_button = create_button_xy(self.vieworder_window_bot, "Cancel", cancel, "TButton", 325, 3, 15)
+            self.vieworder_window_bot.place(x=0,y=460)
+            
+            
+
+        createorderslist(self.cursor.execute('SELECT * FROM orders'))
+
+# class ViewOrderGUI:
+#     def __init__(self):
+#         # Set the cursor for db
+#         self.cursor = db.cursor()
     
-    #Get User Info
+#         # Set the appearance of the main window
+#         self.vieworder_window = create_window(self, "View Order", list_geo)
     
-    #Set the appearance of main window
-    #Title the window
-    #Set geometry
-    #Set background color
-    #Place the window
+#         # Create frames
+#         self.vieworder_window_top = tkinter.Frame(height=680, width=1000, bg=bg_normal)
+#         self.vieworder_window_bot = tkinter.Frame(height=100, width=list_w, bg=bg_normal)
+#         self.vieworder_detail_bot = tkinter.Frame(height=100, width=list_w, bg=bg_normal)
+
+#         # Canvas setup
+#         self.canvas_h = 680
+#         self.canvas_w = 1000
+#         self.canvas = tkinter.Canvas(self.vieworder_window, bg=bg_normal, height=self.canvas_h, width=self.canvas_w)
+#         self.bar = tkinter.Scrollbar(self.vieworder_window, orient=tkinter.VERTICAL)
+#         self.bar.config(command=self.canvas.yview)
+#         self.canvas.config(yscrollcommand=self.bar.set)
     
-    #Set style
+#         def cancel():
+#             self.cursor.close()
+#             self.vieworder_window.destroy()
+#             from main import AdminGUI
+#             AdminGUI()
     
-    #Create frames
+#         def createorderslist(order_list):
+#             def viewdetail():
+#                 def backtolist():
+#                     self.vieworder_detail.destroy()
+#                     self.vieworder_detail_bot.place_forget()
+#                     createorderslist(self.cursor.execute('SELECT * FROM orders'))
+
+#                 self.orderlist_frame.destroy()
+#                 self.vieworder_detail = tkinter.Frame(self.canvas, height=self.canvas_h, width=self.canvas_w, bg=bg_label)
+#                 self.canvas.create_window((0, 0), window=self.vieworder_detail, anchor=tkinter.N, width=self.canvas.cget('width'))
+#                 self.canvas.config(height=self.canvas_h, width=self.canvas_w)
+
+#                 # Create the order details
+#                 txt = ("Order Detail\n===================================================================")
+#                 order = self.cursor.execute('SELECT * FROM orders WHERE order_id =?', [self.var.get(),]).fetchone()
+#                 booklist = [int(x) for x in order[2].split(":")]
+#                 for i in range(0, len(booklist)):
+#                     if booklist[i] != 0:
+#                         book = self.cursor.execute('SELECT * FROM books WHERE book_id =?', [i,]).fetchone()
+#                         txt += ("\nTitle: " + str(book[1]) + "\nAuthor: " + str(book[2]) + "\nPublisher: " + str(book[3])
+#                                  + "\nPrice: " + str(book[4]) + "\nQty: " + str(booklist[i]))
+#                         txt += "\n==================================================================="
+
+#                 # Customer Information
+#                 txt += "\nCustomer Information:\n==================================================================="
+#                 shipinfo = order[4].split(":")
+#                 txt += ("\nFull Name: " + str(shipinfo[0]) +
+#                         "\nShipping Address:\n Street: " + str(shipinfo[1]) +
+#                         "\n City: " + str(shipinfo[2]) +
+#                         "\n State: " + str(shipinfo[3]) +
+#                         "\n Country: " + str(shipinfo[4]) +
+#                         "\n Zip: " + str(shipinfo[5]))
+
+#                 # Payment Information
+#                 txt += "\nPayment Information:\n==================================================================="
+#                 payinfo = order[5].split(":")
+#                 txt += "\nPayment Method: " + str(payinfo[0])
+#                 if payinfo[0] == "Credit/Debit Card":
+#                     txt += ("\nName on Card: " + str(payinfo[2]) +
+#                             "\nCard Number: " + str(payinfo[3]) +
+#                             "\nCard Exp: " + str(payinfo[4]) + "/" + str(payinfo[5]) +
+#                             "\nBilling Address:\n Street: " + str(payinfo[6]) +
+#                             "\n City: " + str(payinfo[7]) +
+#                             "\n State: " + str(payinfo[8]) +
+#                             "\n Country: " + str(payinfo[9]) +
+#                             "\n Zip: " + str(payinfo[10]) +
+#                             "\n Phone: " + str(payinfo[11]))
+#                 elif payinfo[0] == "Bank Check":
+#                     txt += ("\nName: " + str(payinfo[2]) +
+#                             "\nBank Type: " + str(payinfo[3]) +
+#                             "\nRouting Number: " + str(payinfo[4]) +
+#                             "\nAccount Number: " + str(payinfo[5]))
+#                 else:
+#                     txt += "\nYou must pay when you receive the box."
+
+#                 # Display the text in the frame
+#                 info = create_head(self.vieworder_detail, txt)
+#                 info.place(relx=0.5, y=0, anchor='center')
+
+#                 # Adjust canvas scroll region
+#                 self.canvas.config(scrollregion=(0, 0, 50, len(booklist) * 30))
+#                 self.vieworder_detail.config(height=len(booklist) * 30)
+#                 self.bar.pack(side=tkinter.RIGHT, pady=0, ipady=0, fill=tkinter.Y)
+#                 self.canvas.pack(side=tkinter.TOP, pady=0)
+
+#                 # Add back button
+#                 self.backtolist_button = create_button_center(self.vieworder_detail_bot, "Back to View Order", backtolist, "TButton", 30, 20)
+#                 self.vieworder_detail_bot.place(x=0, y=self.canvas_h)
+#                 self.vieworder_detail_bot.lift()
+
+#             # # Create order list frame
+#             # self.var = tkinter.IntVar(value=0)
+#             self.orderlist_frame = tkinter.Frame(self.canvas, height=self.canvas_h, width=self.canvas_w, bg=bg_label)
+#             # self.canvas.create_window((0, 0), window=self.orderlist_frame, anchor=tkinter.NW, width=self.canvas.cget('width'))
+#             # self.selectedorders = order_list.fetchall()
+
+#             # # Set canvas scroll region
+#             # self.canvas.config(scrollregion=(0, 0, 50, 1000 + len(self.selectedorders) * 30))
+
+#             # # Create header row
+#             # headers = ["Order ID", "User ID", "Total Qty", "Total Price", "Payment Method", "Show Detail"]
+#             # for i in range(len(headers)):
+#             #     create_head(self.orderlist_frame, text=headers[i]).grid(row=0, column=i + 1)
+            
+#             # ind = 1  # Start the index from 1 for the first row of orders
+#             # for order in self.selectedorders:
+#             #     oid = create_head(self.orderlist_frame, text=str(order[0]))
+#             #     uid = create_head(self.orderlist_frame, text=str(order[1]))
+#             #     qty = create_head(self.orderlist_frame, text=str(sum([int(x) for x in order[2].split(":")])))
+#             #     price = create_head(self.orderlist_frame, text=f"${order[3]}")
+#             #     method = create_head(self.orderlist_frame, text=order[5].split(":")[0])
+
+#             #     # Create radiobutton for viewing details
+#             #     detail = tkinter.Radiobutton(self.orderlist_frame, variable=self.var, value=int(order[0]), command=viewdetail, fg=fc_label, bg=bg_label)
+#             #     detail.deselect()
+
+#             #     # Position order items in grid
+#             #     oid.grid(row=ind, column=1, sticky=tkinter.W)
+#             #     uid.grid(row=ind, column=2, sticky=tkinter.W)
+#             #     qty.grid(row=ind, column=3, sticky=tkinter.W)
+#             #     price.grid(row=ind, column=4, sticky=tkinter.W)
+#             #     method.grid(row=ind, column=5, sticky=tkinter.W)
+#             #     detail.grid(row=ind, column=6)
+
+#             #     ind = ind + 1
+
+#             #  # Add scrollbar and canvas to the window
+#             # self.bar.pack(side=tkinter.RIGHT, pady=30, ipady=195, anchor=tkinter.N)
+#             # self.canvas.pack(side=tkinter.TOP, pady=35)
+
+#             # # Create and place title and cancel button
+#             # self.vieworder_title = create_title(self.vieworder_window_top, "View Order", 10)
+#             # self.vieworder_window_top.place(x=0, y=0)
+
+#             # self.cancel_button = create_button_center(self.vieworder_window_bot, "Cancel", cancel, "TButton", 30, 15)
+#             # self.vieworder_window_bot.place(x=0, y=self.canvas_h)
+#             # self.vieworder_window_bot.lift()
+
+#             #create canvas
+#             canvas = tkinter.Canvas(self.vieworder_window_top, bg = bg_normal, height = 680, width = 1000, scrollregion = (0, 0, 1000, len(order_list)*30))
     
-    #Create labels and entries
+#             #create scroll bar
+#             bar = tkinter.Scrollbar(self.vieworder_window_top, orient = tkinter.VERTICAL, command = canvas.yview)
+#             bar.pack(side = tkinter.RIGHT, pady = 30, ipady = 420, anchor = tkinter.N)
+
+#             #set the scrollable area
+#             canvas.config(yscrollcommand = bar.set)
+
+#             #create frame widget on canvas and place the frame on canvas
+#             frame = tkinter.Frame(canvas)
+#             canvas.create_window((0, 0), window = frame, anchor = tkinter.NW, width = canvas.cget('width'))
+
+#             # Create header row
+#             headers = ["Order ID", "User ID", "Total Qty", "Total Price", "Payment Method", "Show Detail"]
+#             for i in range(len(headers)):
+#                 create_head(self.orderlist_frame, text=headers[i]).grid(row=0, column=i + 1)
+
+#             #create multiple button widgets and place them on frame
+#             var = tkinter.IntVar()
+#             for order in order_list:
+
+#                 oid = create_head(self.orderlist_frame, text=str(order[0]))
+#                 uid = create_head(self.orderlist_frame, text=str(order[1]))
+#                 qty = create_head(self.orderlist_frame, text=str(sum([int(x) for x in order[2].split(":")])))
+#                 price = create_head(self.orderlist_frame, text=f"${order[3]}")
+#                 method = create_head(self.orderlist_frame, text=order[5].split(":")[0])
+
+#                 # Create radiobutton for viewing details
+#                 detail = tkinter.Radiobutton(self.orderlist_frame, variable=var, value=int(order[0]), command=viewdetail, fg=fc_label, bg=bg_label)
+#                 detail.deselect()
+
+#                 ind = int(order[0]) + 1
+#                 # Position order items in grid
+#                 oid.grid(row=ind, column=1, sticky=tkinter.W)
+#                 uid.grid(row=ind, column=2, sticky=tkinter.W)
+#                 qty.grid(row=ind, column=3, sticky=tkinter.W)
+#                 price.grid(row=ind, column=4, sticky=tkinter.W)
+#                 method.grid(row=ind, column=5, sticky=tkinter.W)
+#                 detail.grid(row=ind, column=6)
+        
+#             #place the canvas on the window
+#             canvas.pack(side = tkinter.TOP, pady = 50)
+
+#             # Wait for a selection
+#             self.vieworder_window_top.wait_variable(var)
+#             canvas.destroy()
+
+#             # Create and place title and cancel button
+#             self.vieworder_title = create_title(self.vieworder_window_top, "View Order", 10)
+#             self.vieworder_window_top.place(x=0, y=0)
+
+#             self.cancel_button = create_button_center(self.vieworder_window_bot, "Cancel", cancel, "TButton", 30, 15)
+#             self.vieworder_window_bot.place(x=0, y=self.canvas_h)
+#             self.vieworder_window_bot.lift()
+
+#         self.cursor.execute('SELECT * FROM orders')
+#         createorderslist(self.cursor.fetchall())
+        #Create labels and entries
     
-    #Set the actions on this GUI
+        #Set the actions on this GUI
     
-    #Create buttons
+        #Create buttons
     
-    #Loop the window
+        #Loop the window

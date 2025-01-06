@@ -24,6 +24,7 @@ fc_entry = "#000000"
 fg_button = "#24344f"
 bg_button = "#FFFFFF"
 fg_logout = "#C32148"
+bg_method = "#AFDCEC"
 
 #size
 normal_w = 520
@@ -32,6 +33,9 @@ normal_geo = f"{normal_w}x{normal_h}"
 list_w = 1520
 list_h = 800
 list_geo = f"{list_w}x{list_h}+0+0"
+multiframe_w = 820
+multiframe_h = 500
+multiframe_geo = f"{multiframe_w}x{multiframe_h}"
 
 #set database
 db=sqlite3.connect("bookstore.db")
@@ -64,6 +68,24 @@ def create_label(window: tkinter.Tk, #Window for placing this label
 
     return label
 
+def create_label_frame(window: tkinter.Frame, #Frame for placing this label
+                 text: str,          #This label's text
+                 x: int,             #X value for placing this label
+                 y: int              #Y value for placing this label
+                 ): 
+    label = tkinter.Label(window, text = text, font=font_normal_bold, fg=fc_label, bg=bg_label)
+    label.place(x=x, y=y)
+
+    return label
+
+def create_label_frame_small(frame: tkinter.Frame, #Frame for placing this head label)
+                text: str            #This head's text
+                ):
+    label = tkinter.Label(frame, text = text, font=font_small, fg=fc_label, bg=bg_label)
+
+    return label
+
+
 def create_title(window: tkinter.Tk, #Window for placing this title label
                  title: str,         #This title label's text
                  y: int              #Y value for placing this label
@@ -72,6 +94,7 @@ def create_title(window: tkinter.Tk, #Window for placing this title label
     label.place(relx = 0.5, y=y, anchor = 'center')
 
     return label
+
 
 def create_entry(window: tkinter.Tk, #Window for placing this entry box
                  x: int,             #X value for placing this entry box
@@ -83,7 +106,7 @@ def create_entry(window: tkinter.Tk, #Window for placing this entry box
 
     return entry
 
-def create_button_xy(window: tkinter.Tk,          #Window for placing this button
+def create_button_xy(window,                      #Window for placing this button
                      title: str,                  #This button's title
                      command: Callable[[], None], #The command when this button is pushed
                      style: str,                  #Style of this button
@@ -96,7 +119,7 @@ def create_button_xy(window: tkinter.Tk,          #Window for placing this butto
 
     return button
 
-def create_button_center(window: tkinter.Tk,          #Window for placing this button
+def create_button_center(window,                      #Window for placing this button
                          title: str,                  #This button's title
                          command: Callable[[], None], #The command when this button is pushed
                          style: str,                  #Style of this button
