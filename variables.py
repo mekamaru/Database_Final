@@ -68,20 +68,24 @@ def create_label(window: tkinter.Tk, #Window for placing this label
 
     return label
 
-def create_label_frame(window: tkinter.Frame, #Frame for placing this label
+def create_label_frame(frame: tkinter.Frame, #Frame for placing this label
                  text: str,          #This label's text
                  x: int,             #X value for placing this label
                  y: int              #Y value for placing this label
                  ): 
-    label = tkinter.Label(window, text = text, font=font_normal_bold, fg=fc_label, bg=bg_label)
+    label = tkinter.Label(frame, text = text, font=font_normal_bold, fg=fc_label, bg=bg_label)
     label.place(x=x, y=y)
 
     return label
 
 def create_label_frame_small(frame: tkinter.Frame, #Frame for placing this head label)
-                text: str            #This head's text
+                text: str,            #This head's text
+                isbold: bool           #bold or not
                 ):
-    label = tkinter.Label(frame, text = text, font=font_small, fg=fc_label, bg=bg_label)
+    if isbold:
+        label = tkinter.Label(frame, text = text, font=font_small_bold, fg=fc_label, bg=bg_label)
+    else:
+        label = tkinter.Label(frame, text = text, font=font_small, fg=fc_label, bg=bg_label)
 
     return label
 
@@ -103,6 +107,13 @@ def create_entry(window: tkinter.Tk, #Window for placing this entry box
                  ):
     entry = tkinter.Entry(window, bd=1, font=font_normal, fg=fc_entry, bg=bg_entry, width=width)
     entry.place(x=x, y=y)
+
+    return entry
+
+def create_entry_frame_small(frame: tkinter.Frame, #Window for placing this entry box
+                 width: int          #Width of this entry box
+                 ):
+    entry = tkinter.Entry(frame, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=width)
 
     return entry
 

@@ -332,21 +332,21 @@ class UserManageGUI:
 
 
 class ViewOrderGUI():
-    def __init__(self): #storemainGUI()‚ÉŒÄ‚Ño‚³‚ê‚éGUI‚Í‘S•”user_id‚ğQÆ‚·‚é
+    def __init__(self): #storemainGUI()ã«å‘¼ã³å‡ºã•ã‚Œã‚‹GUIã¯å…¨éƒ¨user_idã‚’å‚ç…§ã™ã‚‹
         self.cursor = db.cursor()
 
     #Set the appearance
-        self.vieworder_window = create_window(self, "View Order", multiframe_geo) #bookcatalogueˆê——‚©‚ç‘I‚Ô -> ‘I‘ğ‰æ–Ê‚ªƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌGUI(user_id)
+        self.vieworder_window = create_window(self, "View Order", multiframe_geo) #bookcatalogueä¸€è¦§ã‹ã‚‰é¸ã¶ -> é¸æŠç”»é¢ãŒãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®GUI(user_id)
 
-        self.vieworder_window_top = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #ƒJƒ^ƒƒO‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒO ¨‘æ“ñƒtƒŒ[ƒ€
-        self.vieworder_window_bot = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #‡Œv‹àŠz‚ÌŒvZ@¨@‘æOƒtƒŒ[ƒ€
-        self.vieworder_detail_bot = tkinter.Frame(height=40, width = 820, bg = bg_normal) #x•¥‚¢•û–@‚Ì“ü—Í@¨@ƒI[ƒo[‚’‚™‚»‚Ì‡B
+        self.vieworder_window_top = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #ã‚«ã‚¿ãƒ­ã‚°ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚° â†’ç¬¬äºŒãƒ•ãƒ¬ãƒ¼ãƒ 
+        self.vieworder_window_bot = tkinter.Frame(height = 40, width = multiframe_w, bg = bg_normal) #åˆè¨ˆé‡‘é¡ã®è¨ˆç®—ã€€â†’ã€€ç¬¬ä¸‰ãƒ•ãƒ¬ãƒ¼ãƒ 
+        self.vieworder_detail_bot = tkinter.Frame(height=40, width = 820, bg = bg_normal) #æ”¯æ‰•ã„æ–¹æ³•ã®å…¥åŠ›ã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ï½’ï½™ãã®â‘¢
 
         # Creating the frame for list view (as same as book list in BuyBookGUI)
         
-        #ˆê——ƒXƒNƒ[ƒ‹@¨@ƒƒCƒ“‚É’¼•t‚¯E‘æˆêƒtƒŒ[ƒ€iƒLƒƒƒ“ƒoƒX“àj
+        #ä¸€è¦§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã€€â†’ã€€ãƒ¡ã‚¤ãƒ³ã«ç›´ä»˜ã‘ãƒ»ç¬¬ä¸€ãƒ•ãƒ¬ãƒ¼ãƒ ï¼ˆã‚­ãƒ£ãƒ³ãƒã‚¹å†…ï¼‰
 
-        # Scrollbar ‚ğ¶¬‚µ‚Ä”z’u
+        # Scrollbar ã‚’ç”Ÿæˆã—ã¦é…ç½®
         self.canvas = tkinter.Canvas(self.vieworder_window, bg =bg_normal, height = 460, width= multiframe_w)
         self.bar = tkinter.Scrollbar(self.vieworder_window, orient=tkinter.VERTICAL)
         
@@ -419,7 +419,7 @@ class ViewOrderGUI():
                 else:
                     txt = txt + ("\nYou must pay when you receive the box.")
 
-                info = create_label_frame_small(self.vieworder_detail, txt)
+                info = create_label_frame_small(self.vieworder_detail, txt, False)
                 info.place(x=0,y=0)
                 self.canvas.config(scrollregion=(0,0,50,len(booklist)*30))
                 self.vieworder_detail.config(height = len(booklist)*30)
@@ -434,14 +434,14 @@ class ViewOrderGUI():
             self.canvas.config(height = 420)
             self.canvas.create_window((0,0), window=self.orderlist, anchor=tkinter.NW, width=self.canvas.cget('width'))
             self.selectedorders = conn.fetchall()
-            self.canvas.config(scrollregion=(0,0,50,1000 + len(self.selectedorders)*30)) #ƒXƒNƒ[ƒ‹”ÍˆÍ
+            self.canvas.config(scrollregion=(0,0,50,1000 + len(self.selectedorders)*30)) #ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ç¯„å›²
 
-            oid_head = create_label_frame_small(self.orderlist, "Order ID")
-            uid_head = create_label_frame_small(self.orderlist, "User ID")
-            qty_head = create_label_frame_small(self.orderlist, "Total Qty")
-            price_head = create_label_frame_small(self.orderlist, "Total Price")
-            method_head = create_label_frame_small(self.orderlist, "Payment Method")
-            detail_head = create_label_frame_small(self.orderlist, "Show Detail")
+            oid_head = create_label_frame_small(self.orderlist, "Order ID", False)
+            uid_head = create_label_frame_small(self.orderlist, "User ID", False)
+            qty_head = create_label_frame_small(self.orderlist, "Total Qty", False)
+            price_head = create_label_frame_small(self.orderlist, "Total Price", False)
+            method_head = create_label_frame_small(self.orderlist, "Payment Method", False)
+            detail_head = create_label_frame_small(self.orderlist, "Show Detail", False)
 
             oid_head.grid(row = 0, column = 1)
             uid_head.grid(row = 0, column = 2)
@@ -452,11 +452,11 @@ class ViewOrderGUI():
             
             for order in self.selectedorders:
                 print(str(order[0]))
-                oid = create_label_frame_small(self.orderlist, str(order[0]))
-                uid = create_label_frame_small(self.orderlist, str(order[1]))
-                qty = create_label_frame_small(self.orderlist, str(sum([int(x) for x in order[2].split(":")])))
-                price = create_label_frame_small(self.orderlist, ("$" +str(order[3])))
-                method = create_label_frame_small(self.orderlist, str(order[5].split(":")[0]))
+                oid = create_label_frame_small(self.orderlist, str(order[0]), False)
+                uid = create_label_frame_small(self.orderlist, str(order[1]), False)
+                qty = create_label_frame_small(self.orderlist, str(sum([int(x) for x in order[2].split(":")])), False)
+                price = create_label_frame_small(self.orderlist, ("$" +str(order[3])), False)
+                method = create_label_frame_small(self.orderlist, str(order[5].split(":")[0]), False)
                 detail = tkinter.Radiobutton(self.orderlist, variable=self.var, value=int(order[0]), command = viewdetail, fg=fc_label, bg=bg_label)
                 detail.deselect()
 
