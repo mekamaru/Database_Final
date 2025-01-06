@@ -6,53 +6,53 @@ import sqlite3
 import os
 from variables import *
 
-        #storemainGUI()‚ÉŒÄ‚Ño‚³‚ê‚éGUI‚Í‘S•”user_id‚ğQÆ‚·‚éB
-        #bookcatalogueˆê——‚©‚ç‘I‚Ô -> ‘I‘ğ‰æ–Ê‚ªƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌGUI(user_id)
-            #ˆê——ƒXƒNƒ[ƒ‹@¨@ƒƒCƒ“‚É’¼•t‚¯E‘æˆêƒtƒŒ[ƒ€iƒLƒƒƒ“ƒoƒX“àj
-            #ƒJƒ^ƒƒO‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒO ¨‘æ“ñƒtƒŒ[ƒ€
-            #‡Œv‹àŠz‚ÌŒvZ@¨@‘æOƒtƒŒ[ƒ€
-        #‘I‘ğˆê——@¨@ƒI[ƒo[ƒŒƒCƒtƒŒ[ƒ€‚»‚Ì‡@
-            #‡Œv‹àŠz@¨@function
-            #‘I‘ğˆê——‚©‚çƒJƒ^ƒƒO‚É–ß‚ê‚é•K—v‚ª‚ ‚é@¨@‘I‘ğˆê——.place_forget()
-        #‰ïŒv@¨@ƒI[ƒo[ƒŒƒCƒtƒŒ[ƒ€‚»‚Ì‡A
-            #x•¥‚¢•û–@‚Ì‘I‘ğ@ª
-                #x•¥‚¢•û–@‚Ì“ü—Í@¨@ƒI[ƒo[‚’‚™‚»‚Ì‡B
-                    #x•¥‚¢•û–@‚Ì•Û‘¶@¨@function
-        #w“ü—š—ğ‚Ì•Û‘¶
-            #book‚Ìsold‚Æavailable‚ÌƒAƒbƒvƒf[ƒg
-            #account‚Ìsaved_payment‚ÌƒAƒbƒvƒf[ƒg
-            #orders‚É’Ç‰Á
+        #storemainGUI()ã«å‘¼ã³å‡ºã•ã‚Œã‚‹GUIã¯å…¨éƒ¨user_idã‚’å‚ç…§ã™ã‚‹ã€‚
+        #bookcatalogueä¸€è¦§ã‹ã‚‰é¸ã¶ -> é¸æŠç”»é¢ãŒãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®GUI(user_id)
+            #ä¸€è¦§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã€€â†’ã€€ãƒ¡ã‚¤ãƒ³ã«ç›´ä»˜ã‘ãƒ»ç¬¬ä¸€ãƒ•ãƒ¬ãƒ¼ãƒ ï¼ˆã‚­ãƒ£ãƒ³ãƒã‚¹å†…ï¼‰
+            #ã‚«ã‚¿ãƒ­ã‚°ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚° â†’ç¬¬äºŒãƒ•ãƒ¬ãƒ¼ãƒ 
+            #åˆè¨ˆé‡‘é¡ã®è¨ˆç®—ã€€â†’ã€€ç¬¬ä¸‰ãƒ•ãƒ¬ãƒ¼ãƒ 
+        #é¸æŠä¸€è¦§ã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ãƒ•ãƒ¬ãƒ¼ãƒ ãã®â‘ 
+            #åˆè¨ˆé‡‘é¡ã€€â†’ã€€function
+            #é¸æŠä¸€è¦§ã‹ã‚‰ã‚«ã‚¿ãƒ­ã‚°ã«æˆ»ã‚Œã‚‹å¿…è¦ãŒã‚ã‚‹ã€€â†’ã€€é¸æŠä¸€è¦§.place_forget()
+        #ä¼šè¨ˆã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ãƒ•ãƒ¬ãƒ¼ãƒ ãã®â‘¡
+            #æ”¯æ‰•ã„æ–¹æ³•ã®é¸æŠã€€â†‘
+                #æ”¯æ‰•ã„æ–¹æ³•ã®å…¥åŠ›ã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ï½’ï½™ãã®â‘¢
+                    #æ”¯æ‰•ã„æ–¹æ³•ã®ä¿å­˜ã€€â†’ã€€function
+        #è³¼å…¥å±¥æ­´ã®ä¿å­˜
+            #bookã®soldã¨availableã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ
+            #accountã®saved_paymentã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ
+            #ordersã«è¿½åŠ 
 
-        #ƒAƒJƒEƒ“ƒgî•ñ‚Ì•ÏX
-            #user_idˆÈŠO‚Í‘S•”
-            #saved_payment‚Íˆê‚©‚ç•ÏX‚Ì‹°‚ê
-        #‰ß‹‚Ìw“ü—š—ğ‚ÌŠm”F
-            #—š—ğ‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒO
+        #ã‚¢ã‚«ã‚¦ãƒ³ãƒˆæƒ…å ±ã®å¤‰æ›´
+            #user_idä»¥å¤–ã¯å…¨éƒ¨
+            #saved_paymentã¯ä¸€ã‹ã‚‰å¤‰æ›´ã®æã‚Œ
+        #éå»ã®è³¼å…¥å±¥æ­´ã®ç¢ºèª
+            #å±¥æ­´ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°
 
 #BuyBooksGUI: set the BuyBooks window's appearance and actions
 class BuyBooksGUI():
-    def __init__(self, user_id): #storemainGUI()‚ÉŒÄ‚Ño‚³‚ê‚éGUI‚Í‘S•”user_id‚ğQÆ‚·‚éB
+    def __init__(self, user_id): #storemainGUI()ã«å‘¼ã³å‡ºã•ã‚Œã‚‹GUIã¯å…¨éƒ¨user_idã‚’å‚ç…§ã™ã‚‹ã€‚
         self.user_id = user_id
         self.cursor = db.cursor()
 
     #Set the appearance
-        self.selectbook_window = tkinter.Tk() #bookcatalogueˆê——‚©‚ç‘I‚Ô -> ‘I‘ğ‰æ–Ê‚ªƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌGUI(user_id)
+        self.selectbook_window = tkinter.Tk() #bookcatalogueä¸€è¦§ã‹ã‚‰é¸ã¶ -> é¸æŠç”»é¢ãŒãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®GUI(user_id)
         self.selectbook_window.title("Order Books [User ID: %s]" %self.user_id)
         self.selectbook_window.geometry(multiframe_geo)
         self.selectbook_window.config(bg = bg_normal)
 
-        self.selectbook_window_mid = tkinter.Frame(height = 125, width = multiframe_w, bg = bg_normal) #ƒJƒ^ƒƒO‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒO ¨‘æ“ñƒtƒŒ[ƒ€
-        self.selectbook_window_bot = tkinter.Frame(height = 175, width = multiframe_w, bg = bg_normal) #‡Œv‹àŠz‚ÌŒvZ@¨@‘æOƒtƒŒ[ƒ€
-        self.purchase_window_top = tkinter.Frame(height = 30, width = multiframe_w, bg = bg_normal) #‰ïŒv@¨@ƒI[ƒo[ƒŒƒCƒtƒŒ[ƒ€‚»‚Ì‡A
-        self.purchase_window_bot = tkinter.Frame(height = 300, width = multiframe_w, bg = bg_normal) #‰ïŒv@¨@ƒI[ƒo[ƒŒƒCƒtƒŒ[ƒ€‚»‚Ì‡A
-        self.method_window_main = tkinter.Frame(height = multiframe_h, width = multiframe_w, bg = bg_normal) #x•¥‚¢•û–@‚Ì“ü—Í@¨@ƒI[ƒo[‚’‚™‚»‚Ì‡B
+        self.selectbook_window_mid = tkinter.Frame(height = 125, width = multiframe_w, bg = bg_normal) #ã‚«ã‚¿ãƒ­ã‚°ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚° â†’ç¬¬äºŒãƒ•ãƒ¬ãƒ¼ãƒ 
+        self.selectbook_window_bot = tkinter.Frame(height = 175, width = multiframe_w, bg = bg_normal) #åˆè¨ˆé‡‘é¡ã®è¨ˆç®—ã€€â†’ã€€ç¬¬ä¸‰ãƒ•ãƒ¬ãƒ¼ãƒ 
+        self.purchase_window_top = tkinter.Frame(height = 30, width = multiframe_w, bg = bg_normal) #ä¼šè¨ˆã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ãƒ•ãƒ¬ãƒ¼ãƒ ãã®â‘¡
+        self.purchase_window_bot = tkinter.Frame(height = 300, width = multiframe_w, bg = bg_normal) #ä¼šè¨ˆã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ãƒ•ãƒ¬ãƒ¼ãƒ ãã®â‘¡
+        self.method_window_main = tkinter.Frame(height = multiframe_h, width = multiframe_w, bg = bg_normal) #æ”¯æ‰•ã„æ–¹æ³•ã®å…¥åŠ›ã€€â†’ã€€ã‚ªãƒ¼ãƒãƒ¼ï½’ï½™ãã®â‘¢
         self.method_window_card = tkinter.Frame(height = 300, width = multiframe_w, bg = bg_method)
         self.method_window_cash = tkinter.Frame(height = 150, width = multiframe_w, bg = bg_method)
         self.method_window_bank = tkinter.Frame(height = 300, width = multiframe_w, bg = bg_method)
 
-        self.canvas = tkinter.Canvas(self.selectbook_window, bg =bg_normal, height = 275, width= multiframe_w) #ˆê——ƒXƒNƒ[ƒ‹@¨@ƒƒCƒ“‚É’¼•t‚¯E‘æˆêƒtƒŒ[ƒ€iƒLƒƒƒ“ƒoƒX“àj
+        self.canvas = tkinter.Canvas(self.selectbook_window, bg =bg_normal, height = 275, width= multiframe_w) #ä¸€è¦§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã€€â†’ã€€ãƒ¡ã‚¤ãƒ³ã«ç›´ä»˜ã‘ãƒ»ç¬¬ä¸€ãƒ•ãƒ¬ãƒ¼ãƒ ï¼ˆã‚­ãƒ£ãƒ³ãƒã‚¹å†…ï¼‰
 
-        # Scrollbar ‚ğ¶¬‚µ‚Ä”z’u
+        # Scrollbar ã‚’ç”Ÿæˆã—ã¦é…ç½®
         self.bar = tkinter.Scrollbar(self.selectbook_window, orient=tkinter.VERTICAL)
         
         self.bar.config(command=self.canvas.yview)
@@ -60,10 +60,10 @@ class BuyBooksGUI():
         self.canvas.config(yscrollcommand=self.bar.set)
         
 
-        # Frame Widget‚ğ ¶¬
-        #frame = tkinter.Frame(canvas,height = 200, width = multiframe_w, bg = bg_label) #ˆê——ƒXƒNƒ[ƒ‹@¨@ƒƒCƒ“‚É’¼•t‚¯E‘æˆêƒtƒŒ[ƒ€iƒLƒƒƒ“ƒoƒX“àj
+        # Frame Widgetã‚’ ç”Ÿæˆ
+        #frame = tkinter.Frame(canvas,height = 200, width = multiframe_w, bg = bg_label) #ä¸€è¦§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã€€â†’ã€€ãƒ¡ã‚¤ãƒ³ã«ç›´ä»˜ã‘ãƒ»ç¬¬ä¸€ãƒ•ãƒ¬ãƒ¼ãƒ ï¼ˆã‚­ãƒ£ãƒ³ãƒã‚¹å†…ï¼‰
 
-        # Frame Widget‚ğ Canvas Widgetã‚É”z’u
+        # Frame Widgetã‚’ Canvas Widgetä¸Šã«é…ç½®
 
         maxid = self.cursor.execute('SELECT Max(book_id) FROM books').fetchone()[0]
         maxprice = self.cursor.execute('SELECT Max(price) FROM books').fetchone()[0]
@@ -102,7 +102,7 @@ class BuyBooksGUI():
                     
             
 
-        # •¡”‚Ì Button Widget ¶¬‚µAFrameã‚É”z’u = ƒXƒNƒ[ƒ‹‚µ‚Ä–{‚ğ‘I‚Ô‚Æ‚¢‚¤“®ì‚ğ¬—§‚³‚¹‚é
+        # è¤‡æ•°ã® Button Widget ç”Ÿæˆã—ã€Frameä¸Šã«é…ç½® = ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¦æœ¬ã‚’é¸ã¶ã¨ã„ã†å‹•ä½œã‚’æˆç«‹ã•ã›ã‚‹
         
         self.listofbooks = []
         self.priceofbooks = []
@@ -116,7 +116,7 @@ class BuyBooksGUI():
             self.canvas.config(height = 275)
             self.canvas.create_window((0,0), window=self.bookcatalogue, anchor=tkinter.NW, width=self.canvas.cget('width'))
             selectedbooks = conn.fetchall()
-            self.canvas.config(scrollregion=(0,0,50,len(selectedbooks)*30)) #ƒXƒNƒ[ƒ‹”ÍˆÍ
+            self.canvas.config(scrollregion=(0,0,50,len(selectedbooks)*30)) #ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ç¯„å›²
             title_head = create_label_frame_small(self.bookcatalogue, "Title")
             author_head = create_label_frame_small(self.bookcatalogue, "Author")
             publisher_head = create_label_frame_small(self.bookcatalogue, "Publisher")
@@ -767,7 +767,7 @@ class BuyBooksGUI():
         self.available_min_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
         self.available_max_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
 
-        #ˆê•¶š = x=7, y=22 i‚¨‚¨‚æ‚»jentry 219;1=7.3
+        #ä¸€æ–‡å­— = x=7, y=22 ï¼ˆãŠãŠã‚ˆãï¼‰entry 219;1=7.3
         self.title_label.place(x=5, y=0)
         self.title_entry.place(x=41, y=0)
         self.author_label.place(x=260, y=0)
