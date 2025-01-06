@@ -419,7 +419,7 @@ class ViewOrderGUI():
                 else:
                     txt = txt + ("\nYou must pay when you receive the box.")
 
-                info = create_label_frame_small(self.vieworder_detail, txt)
+                info = create_label_frame_small(self.vieworder_detail, txt, False)
                 info.place(x=0,y=0)
                 self.canvas.config(scrollregion=(0,0,50,len(booklist)*30))
                 self.vieworder_detail.config(height = len(booklist)*30)
@@ -436,12 +436,12 @@ class ViewOrderGUI():
             self.selectedorders = conn.fetchall()
             self.canvas.config(scrollregion=(0,0,50,1000 + len(self.selectedorders)*30)) #スクロール範囲
 
-            oid_head = create_label_frame_small(self.orderlist, "Order ID")
-            uid_head = create_label_frame_small(self.orderlist, "User ID")
-            qty_head = create_label_frame_small(self.orderlist, "Total Qty")
-            price_head = create_label_frame_small(self.orderlist, "Total Price")
-            method_head = create_label_frame_small(self.orderlist, "Payment Method")
-            detail_head = create_label_frame_small(self.orderlist, "Show Detail")
+            oid_head = create_label_frame_small(self.orderlist, "Order ID", False)
+            uid_head = create_label_frame_small(self.orderlist, "User ID", False)
+            qty_head = create_label_frame_small(self.orderlist, "Total Qty", False)
+            price_head = create_label_frame_small(self.orderlist, "Total Price", False)
+            method_head = create_label_frame_small(self.orderlist, "Payment Method", False)
+            detail_head = create_label_frame_small(self.orderlist, "Show Detail", False)
 
             oid_head.grid(row = 0, column = 1)
             uid_head.grid(row = 0, column = 2)
@@ -452,11 +452,11 @@ class ViewOrderGUI():
             
             for order in self.selectedorders:
                 print(str(order[0]))
-                oid = create_label_frame_small(self.orderlist, str(order[0]))
-                uid = create_label_frame_small(self.orderlist, str(order[1]))
-                qty = create_label_frame_small(self.orderlist, str(sum([int(x) for x in order[2].split(":")])))
-                price = create_label_frame_small(self.orderlist, ("$" +str(order[3])))
-                method = create_label_frame_small(self.orderlist, str(order[5].split(":")[0]))
+                oid = create_label_frame_small(self.orderlist, str(order[0]), False)
+                uid = create_label_frame_small(self.orderlist, str(order[1]), False)
+                qty = create_label_frame_small(self.orderlist, str(sum([int(x) for x in order[2].split(":")])), False)
+                price = create_label_frame_small(self.orderlist, ("$" +str(order[3])), False)
+                method = create_label_frame_small(self.orderlist, str(order[5].split(":")[0]), False)
                 detail = tkinter.Radiobutton(self.orderlist, variable=self.var, value=int(order[0]), command = viewdetail, fg=fc_label, bg=bg_label)
                 detail.deselect()
 

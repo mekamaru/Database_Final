@@ -223,7 +223,7 @@ class StoreMainGUI():
         def upduserinfo():
             self.cursor.close()
             self.store_window.destroy()
-            UserInfoGUI(self, self.user_id)
+            UserInfoGUI(self.user_id)
             StoreMainGUI(self, self.user_id)
 
         def logout():

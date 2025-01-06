@@ -96,8 +96,7 @@ class BuyBooksGUI():
                     self.subtotal = (float(self.priceofbooks[i]) * int(self.numberofbooks[i].get())) + self.subtotal
                     self.qtytotal = int(self.numberofbooks[i].get()) + self.qtytotal
                     self.total_head.place_forget()
-                    self.total_head = tkinter.Label(self.selectbook_window_bot, text=("Subtotal(" + str(self.qtytotal) + " books): $" + str(round(self.subtotal, 2))), font=font_normal_bold, fg=fc_label, bg=bg_label)
-                    self.total_head.place(x=300, y=10)
+                    self.total_head = create_label_frame(self.selectbook_window_bot, ("Subtotal(" + str(self.qtytotal) + " books): $" + str(round(self.subtotal, 2))), 300, 10)
                     self.orderbooks[self.listofbooks[i][0]] = self.numberofbooks[i].get()
                     
             
@@ -117,12 +116,12 @@ class BuyBooksGUI():
             self.canvas.create_window((0,0), window=self.bookcatalogue, anchor=tkinter.NW, width=self.canvas.cget('width'))
             selectedbooks = conn.fetchall()
             self.canvas.config(scrollregion=(0,0,50,len(selectedbooks)*30)) #スクロール範囲
-            title_head = create_label_frame_small(self.bookcatalogue, "Title")
-            author_head = create_label_frame_small(self.bookcatalogue, "Author")
-            publisher_head = create_label_frame_small(self.bookcatalogue, "Publisher")
-            price_head = create_label_frame_small(self.bookcatalogue, "Price")
-            available_head = create_label_frame_small(self.bookcatalogue, "Availablity")
-            qty_head = create_label_frame_small(self.bookcatalogue, "Qty")
+            title_head = create_label_frame_small(self.bookcatalogue, "Title", False)
+            author_head = create_label_frame_small(self.bookcatalogue, "Author", False)
+            publisher_head = create_label_frame_small(self.bookcatalogue, "Publisher", False)
+            price_head = create_label_frame_small(self.bookcatalogue, "Price", False)
+            available_head = create_label_frame_small(self.bookcatalogue, "Availablity", False)
+            qty_head = create_label_frame_small(self.bookcatalogue, "Qty", False)
 
             title_head.grid(row = 0, column = 1)
             author_head.grid(row = 0, column = 2)
@@ -134,12 +133,12 @@ class BuyBooksGUI():
             for bk in selectedbooks:
                 self.listofbooks.append(bk)
                 var = tkinter.DoubleVar()
-                title = tkinter.Label(self.bookcatalogue, text= str(bk[1]), font=font_small, fg=fc_label, bg=bg_label)
-                author = tkinter.Label(self.bookcatalogue, text= str(bk[2]), font=font_small, fg=fc_label, bg=bg_label)
-                publisher = tkinter.Label(self.bookcatalogue, text= str(bk[3]), font=font_small, fg=fc_label, bg=bg_label)
-                price = tkinter.Label(self.bookcatalogue, text= ("$" + str(bk[4])), font=font_small, fg=fc_label, bg=bg_label)
-                available = tkinter.Label(self.bookcatalogue, text= str(bk[5]), font=font_small, fg=fc_label, bg=bg_label)
-                unavailable = tkinter.Label(self.bookcatalogue, text= "Unavailable", font=font_small, fg=fc_label, bg=bg_label)
+                title = create_label_frame_small(self.bookcatalogue, str(bk[1]), False)
+                author = create_label_frame_small(self.bookcatalogue, str(bk[2]), False)
+                publisher = create_label_frame_small(self.bookcatalogue, str(bk[3]), False)
+                price = create_label_frame_small(self.bookcatalogue, ("$" + str(bk[4])), False)
+                available = create_label_frame_small(self.bookcatalogue, str(bk[5]), False)
+                unavailable = create_label_frame_small(self.bookcatalogue, "Unavailable", False)
                 numofbk = tkinter.Spinbox(self.bookcatalogue, from_=0, to=bk[5], width = 20, command = calctotalprice)
                 numofbk.configure(width = 5)
                 numofbk.delete(0)
@@ -149,15 +148,16 @@ class BuyBooksGUI():
                     numofbk.insert(0,0)
                 self.priceofbooks.append(bk[4])
                 self.numberofbooks.append(numofbk)
-                title.grid(row = len(self.priceofbooks) + 1, column = 1, sticky = tkinter.W)
-                author.grid(row = len(self.priceofbooks) + 1, column = 2, sticky = tkinter.W)
-                publisher.grid(row = len(self.priceofbooks) + 1, column = 3, sticky = tkinter.W)
-                price.grid(row = len(self.priceofbooks) + 1, column = 4, sticky = tkinter.W)
-                available.grid(row = len(self.priceofbooks) + 1, column = 5)
+                grid_ind = len(self.priceofbooks) + 1
+                title.grid(row = grid_ind, column = 1, sticky = tkinter.W)
+                author.grid(row = grid_ind, column = 2, sticky = tkinter.W)
+                publisher.grid(row = grid_ind, column = 3, sticky = tkinter.W)
+                price.grid(row = grid_ind, column = 4, sticky = tkinter.W)
+                available.grid(row = grid_ind, column = 5)
                 if bk[5] != 0:
-                    numofbk.grid(row = len(self.priceofbooks) + 1, column=6)
+                    numofbk.grid(row = grid_ind, column=6)
                 else:
-                    unavailable.grid(row = len(self.priceofbooks) + 1, column=6)
+                    unavailable.grid(row = grid_ind, column=6)
 
             self.bar.pack(side=tkinter.RIGHT, pady=120, ipady =158, anchor = tkinter.N)
             self.canvas.pack(side=tkinter.TOP, pady = 125)
@@ -218,6 +218,8 @@ class BuyBooksGUI():
             self.available_min_entry.insert(0, int(0))
             if len(self.available_max_entry.get()) != 0: self.available_max_entry.delete(0, len(self.available_max_entry.get()))
             self.available_max_entry.insert(0, maxavailable)
+            self.bookcatalogue.destroy()
+            createbookslist(self.cursor.execute('SELECT * FROM books'))
 
         def cartreset():
             maxid = self.cursor.execute('SELECT Max(book_id) FROM books').fetchone()[0]
@@ -228,9 +230,7 @@ class BuyBooksGUI():
             self.subtotal = 0
             self.total_head.destroy()
             self.bookcatalogue.destroy()
-            self.total_head = tkinter.Label(self.selectbook_window_bot, text=("Subtotal(" + str(self.qtytotal) + " books): $" + str(self.subtotal)),
-                                            font=font_normal_bold, fg=fc_label, bg=bg_label)
-            self.total_head.place(x=300, y=10)
+            self.total_head = create_label_frame(self.selectbook_window_bot, ("Subtotal(" + str(self.qtytotal) + " books): $" + str(self.subtotal)), 300, 10)
             createbookslist(self.cursor.execute('SELECT * FROM books'))
             
             
@@ -266,7 +266,7 @@ class BuyBooksGUI():
         def selectpayment():
             
             def gotopay():
-                self.pay_method = tkinter.Label(self.purchase_window_bot, text=self.method, font=font_small, fg=fc_label, bg=bg_label)
+                self.pay_method = create_label_frame_small(self.purchase_window_bot, self.method, False)
                 self.pay_method.place(x=135, y=210)
                 print(self.savecheck.get())
                 print(self.payinfo)
@@ -324,38 +324,46 @@ class BuyBooksGUI():
                 self.method_window_bank.place_forget()
                 self.method = "Credit/Debit Card"
 
-                self.card_selectpay_head = tkinter.Label(self.method_window_card, text="Card Information", font=font_normal_bold, fg=fc_label, bg=bg_label)
-                self.card_selectpay_head.place(x=350, y=5)
+                self.card_selectpay_head = create_label_frame(self.method_window_card, "Card Information", 350, 5)
 
-                self.cardinfo_head = tkinter.Label(self.method_window_card, text="Card Detail:", font=font_small_bold, fg=fc_label, bg=bg_label)
-                self.cardname_label = tkinter.Label(self.method_window_card, text="Name on Card:", font=font_small, fg=fc_label, bg=bg_label)
-                self.cardname_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-                self.cardnumber_label = tkinter.Label(self.method_window_card, text="Card Number:", font=font_small, fg=fc_label, bg=bg_label)
-                self.nospace = tkinter.Label(self.method_window_card, text = "(no space)", font=font_small, fg=fc_label, bg=bg_label)
-                self.cardnumber_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-                self.cardexp_label = tkinter.Label(self.method_window_card, text="Expire MM/YY:", font=font_small, fg=fc_label, bg=bg_label)
-                self.cardexpmon_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=3)
-                self.cardexpto_label = tkinter.Label(self.method_window_card, text="/", font=font_small, fg=fc_label, bg=bg_method)
-                self.cardexpyear_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=3)
-                self.cardcvc_label = tkinter.Label(self.method_window_card, text="CVC:", font=font_small, fg=fc_label, bg=bg_label)
+                self.cardinfo_head = create_label_frame_small(self.method_window_card, "Card Detail:", True)
+                self.cardname_label = create_label_frame_small(self.method_window_card, "Name on Card:", False)
+                self.cardname_entry = create_entry_frame_small(self.method_window_card, width=30)
+
+                self.cardnumber_label = create_label_frame_small(self.method_window_card, "Card Number:", False)
+                self.nospace = create_label_frame_small(self.method_window_card, "(no space)", False)
+                self.cardnumber_entry = create_entry_frame_small(self.method_window_card, width=30)
+
+                self.cardexp_label = create_label_frame_small(self.method_window_card, "Expire MM/YY:", False)
+                self.cardexpmon_entry = create_entry_frame_small(self.method_window_card, width=3)
+                self.cardexpto_label = create_label_frame_small(self.method_window_card, "/", False)
+                self.cardexpyear_entry = create_entry_frame_small(self.method_window_card, width=3)
+
+                self.cardcvc_label = create_label_frame_small(self.method_window_card, "CVC:", False)
                 self.cardcvc_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, show = "*", fg=fc_entry, bg=bg_entry, width=5)
-                self.cardphone_label = tkinter.Label(self.method_window_card, text="Phone:", font=font_small, fg=fc_label, bg=bg_label)
-                self.cardphone_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
+
+                self.cardphone_label = create_label_frame_small(self.method_window_card, "Phone:", False)
+                self.cardphone_entry = create_entry_frame_small(self.method_window_card, width=30)
 
                 
                 
                 
-                self.bill_head = tkinter.Label(self.method_window_card, text="Billing Address:", font=font_small_bold, fg=fc_label, bg=bg_label)
-                self.bill_street_label = tkinter.Label(self.method_window_card, text="Street:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bill_street_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-                self.bill_city_label = tkinter.Label(self.method_window_card, text="City:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bill_city_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-                self.bill_state_label = tkinter.Label(self.method_window_card, text="State:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bill_state_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-                self.bill_country_label = tkinter.Label(self.method_window_card, text="Country:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bill_country_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-                self.bill_zip_label = tkinter.Label(self.method_window_card, text="Zipcode:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bill_zip_entry = tkinter.Entry(self.method_window_card, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
+                self.bill_head  = create_label_frame_small(self.method_window_card, "Billing Address:", True)
+                self.bill_street_label = create_label_frame_small(self.method_window_card, "Street:", False)
+                self.bill_street_entry = create_entry_frame_small(self.method_window_card, width=35)
+
+                self.bill_city_label = create_label_frame_small(self.method_window_card, "City:", False)
+                self.bill_city_entry = create_entry_frame_small(self.method_window_card, width=35)
+
+                self.bill_state_label = create_label_frame_small(self.method_window_card, "State:", False)
+                self.bill_state_entry = create_entry_frame_small(self.method_window_card, width=35)
+
+                self.bill_country_label = create_label_frame_small(self.method_window_card, "Country:", False)
+                self.bill_country_entry = create_entry_frame_small(self.method_window_card, width=35)
+
+                self.bill_zip_label = create_label_frame_small(self.method_window_card, "ZipCode:", False)
+                self.bill_zip_entry = create_entry_frame_small(self.method_window_card, width=35)
+
                 self.card_savemethod_button = tkinter.Checkbutton(self.method_window_card, text = "Save this method for next purchase?",
                                                              variable = self.savecheck, onvalue = 1, offvalue = 0, font = font_small, bg = bg_method)
                 self.card_savemethod_button.deselect()
@@ -406,10 +414,9 @@ class BuyBooksGUI():
                 
                 
                 self.card_savemethod_button.place(x=305, y=180)
-                self.savecard_button = ttk.Button(self.method_window_card, command=savecard, text="Save Payment Method", style="TButton", width=30)
-                self.savecard_button.place(x=316, y=220)
-                self.card_backtosum_button = ttk.Button(self.method_window_card, command=backtosum, text="Unsave and Back to Summary", style="TButton", width=30)
-                self.card_backtosum_button.place(x=316, y=250)
+
+                self.savecard_button = create_button_xy(self.method_window_card, "Save Payment Method", savecard, "TButton", 316, 220, 30)
+                self.card_backtosum_button = create_button_xy(self.method_window_card, "Unsave and Back to Summary", backtosum, "TButton", 316, 250, 30)
                 
                 self.method_window_card.place(x=0,y=130)
 
@@ -434,19 +441,21 @@ class BuyBooksGUI():
                 self.method_window_cash.place_forget()
                 self.method = "Bank Check"
 
-                self.bank_selectpay_head = tkinter.Label(self.method_window_bank, text="Bank Information", font=font_normal_bold, fg=fc_label, bg=bg_label)
-                self.bank_selectpay_head.place(x=350, y=5)
+                self.bank_selectpay_head = create_label_frame(self.method_window_bank, "Bank Information", 350, 5)
 
-                self.bankinfo_head = tkinter.Label(self.method_window_bank, text="Bank Detail:", font=font_small_bold, fg=fc_label, bg=bg_label)
-                self.bankname_label = tkinter.Label(self.method_window_bank, text="Bank Name:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bankname_entry = tkinter.Entry(self.method_window_bank, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
+                self.bankinfo_head = create_label_frame_small(self.method_window_bank, "Bank Detail:", True)
+                self.bankname_label = create_label_frame_small(self.method_window_bank, "Bank Name:", False)
+                self.bankname_entry = create_entry_frame_small(self.method_window_bank, width=30)
+
                 self.banktype = tkinter.StringVar(value="None")
-                self.banktype_label = tkinter.Label(self.method_window_bank, text="Account Type:", font=font_small, fg=fc_label, bg=bg_label)
+                self.banktype_label = create_label_frame_small(self.method_window_bank, "Account Type:", False)
                 self.banktype_entry = tkinter.OptionMenu(self.method_window_bank, self.banktype, "Checking", "Saving" )
-                self.routing_label = tkinter.Label(self.method_window_bank, text="Routing Number:", font=font_small, fg=fc_label, bg=bg_label)
-                self.routing_entry = tkinter.Entry(self.method_window_bank, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-                self.bankacc_label = tkinter.Label(self.method_window_bank, text="Account Number:", font=font_small, fg=fc_label, bg=bg_label)
-                self.bankacc_entry = tkinter.Entry(self.method_window_bank, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
+
+                self.routing_label = create_label_frame_small(self.method_window_bank, "Routing Number:", False)
+                self.routing_entry = create_entry_frame_small(self.method_window_bank, width=30)
+
+                self.bankacc_label = create_label_frame_small(self.method_window_bank, "Account Number:", False)
+                self.bankacc_entry = create_entry_frame_small(self.method_window_bank, width=30)
 
                 self.bank_savemethod_button = tkinter.Checkbutton(self.method_window_bank, text = "Save this method for next purchase?",
                                                              variable = self.savecheck, onvalue = 2, offvalue = 0, font = font_small, bg = bg_method)
@@ -477,10 +486,9 @@ class BuyBooksGUI():
                 
                 
                 self.bank_savemethod_button.place(x=305, y=180)
-                self.savebank_button = ttk.Button(self.method_window_bank, command=savebank, text="Save Payment Method", style="TButton", width=30)
-                self.savebank_button.place(x=316, y=220)
-                self.bank_backtosum_button = ttk.Button(self.method_window_bank, command=backtosum, text="Unsave and Back to Summary", style="TButton", width=30)
-                self.bank_backtosum_button.place(x=316, y=250)
+
+                self.savebank_button = create_button_xy(self.method_window_bank, "Save Payment Method", savebank, "TButton", 316, 220, 30)
+                self.bank_backtosum_button = create_button_xy(self.method_window_bank, "Unsave and Back to Summary", backtosum, "TButton", 316, 250, 30)
                 
                 self.method_window_bank.place(x=0,y=130)
 
@@ -491,8 +499,7 @@ class BuyBooksGUI():
                 self.method_window_cash.place(x=0,y=130)
                 self.method = "Cash (on Delivery)"
 
-                self.cash_head = tkinter.Label(self.method_window_cash, text="You must pay when you receive the box.", font=font_normal_bold, fg=fc_label, bg=bg_label)
-                self.cash_head.place(x=230, y=10)
+                self.cash_head = create_label_frame(self.method_window_cash, "You must pay when you receive the box.", 230, 10)
 
                 self.cash_savemethod_button = tkinter.Checkbutton(self.method_window_cash, text = "Save this method for next purchase?",
                                                              variable = self.savecheck, onvalue = 3, offvalue = 0, font = font_small, bg = bg_method)
@@ -504,24 +511,19 @@ class BuyBooksGUI():
                     self.cash_savemethod_button.select()
                     
                 self.cash_savemethod_button.place(x=305, y=40)
-                self.savecash_button = ttk.Button(self.method_window_cash, command=gotopay, text="Save Payment Method", style="TButton", width=30)
-                self.savecash_button.place(x=316, y=80)
-                self.cash_backtosum_button = ttk.Button(self.method_window_cash, command=backtosum, text="Unsave and Back to Summary", style="TButton", width=30)
-                self.cash_backtosum_button.place(x=316, y=110)
+
+                self.savecash_button = create_button_xy(self.method_window_cash, "Save Payment Method", gotopay, "TButton", 316, 80, 30)
+                self.cash_backtosum_button = create_button_xy(self.method_window_cash, "Unsave and Back to Summary", backtosum, "TButton", 316, 110, 30)
                 
             self.canvas.pack_forget()
             self.bar.pack_forget()
             self.method_window_main.place(x=0,y=0)
-            self.selectpay_head = tkinter.Label(self.method_window_main, text="Select Payment Method", font=font_normal_bold, fg=fc_label, bg=bg_label)
-            self.selectpay_head.place(x=310, y=0)
-            self.credit_button = ttk.Button(self.method_window_main, command=card, text="Credit/Debit Card", style="TButton", width=30)
-            self.credit_button.place(x=316, y=40)
-            self.bank_button = ttk.Button(self.method_window_main, command=bank, text="Bank Check", style="TButton", width=30)
-            self.bank_button.place(x=316, y=70)
-            self.cash_button = ttk.Button(self.method_window_main, command=cash, text="Cash on Delivary", style="TButton", width=30)
-            self.cash_button.place(x=316, y=100)
-            self.backtosum_button = ttk.Button(self.method_window_main, command=backtosum, text="Unsave and Back to Summary", style="TButton", width=30)
-            self.backtosum_button.place(x=316, y=130)
+            self.selectpay_head = create_label_frame(self.method_window_main, "Select Payment Method", 310, 0)
+            self.credit_button = create_button_xy(self.method_window_main, "Credit/Debit Card", card, "TButton", 316, 40, 30)
+            self.bank_button = create_button_xy(self.method_window_main, "Bank Check", bank, "TButton", 316, 70, 30)
+            self.cash_button = create_button_xy(self.method_window_main, "Cash on Delivary", cash, "TButton", 316, 100, 30)
+            self.backtosum_button = create_button_xy(self.method_window_main, "Unsave and Back to Summary", backtosum, "TButton", 316, 130, 30)
+
             self.savecheck = tkinter.IntVar(value = 0)
             
 
@@ -644,7 +646,8 @@ class BuyBooksGUI():
 
                 self.cursor.close()
                 self.selectbook_window.destroy()
-                storemainGUI(self.user_id)
+                from main import StoreMainGUI
+                StoreMainGUI(self.user_id)
             
 
         def viewsummary():
@@ -653,21 +656,22 @@ class BuyBooksGUI():
             self.selectbook_window_bot.place_forget()
             self.canvas.config(height = 180)
             
-            self.summary_head = tkinter.Label(self.purchase_window_top, text="Order Summary", font=font_normal_bold, fg=fc_label, bg=bg_label)
-            self.summary_head.place(x=340, y=0)
+            self.summary_head = create_label_frame(self.purchase_window_top, "Order Summary", 340, 0)
             self.bkcatalogue_summary = tkinter.Frame(self.canvas,height = 180, width = multiframe_w, bg = bg_label)
             self.canvas.create_window((0,0), window=self.bkcatalogue_summary, anchor=tkinter.NW, width=self.canvas.cget('width'))
 
-            title_head = tkinter.Label(self.bkcatalogue_summary, text= "Title", font=font_small, fg=fc_label, bg=bg_label)
+            title_head = create_label_frame_small(self.bkcatalogue_summary, "Title", False)
+            author_head = create_label_frame_small(self.bkcatalogue_summary, "Author", False)
+            publisher_head = create_label_frame_small(self.bkcatalogue_summary, "Publisher", False)
+            price_head = create_label_frame_small(self.bkcatalogue_summary, "Price", False)
+            qty_head = create_label_frame_small(self.bkcatalogue_summary, "Qty", False)
+
             title_head.grid(row = 0, column = 1)
-            author_head = tkinter.Label(self.bkcatalogue_summary, text= "Author", font=font_small, fg=fc_label, bg=bg_label)
             author_head.grid(row = 0, column = 2)
-            publisher_head = tkinter.Label(self.bkcatalogue_summary, text= "Publisher", font=font_small, fg=fc_label, bg=bg_label)
             publisher_head.grid(row = 0, column = 3)
-            price_head = tkinter.Label(self.bkcatalogue_summary, text= "Price", font=font_small, fg=fc_label, bg=bg_label)
             price_head.grid(row = 0, column = 4)
-            qty_head = tkinter.Label(self.bkcatalogue_summary, text= "Qty", font=font_small, fg=fc_label, bg=bg_label)
             qty_head.grid(row = 0, column = 5)
+
             self.ordersummary = []
             
             for i in range(0, len(self.orderbooks)):
@@ -675,38 +679,45 @@ class BuyBooksGUI():
                 if bid != 0:
                     self.ordersummary.append([i, bid])
                     book = self.cursor.execute('SELECT * FROM books WHERE book_id =?', [i,]).fetchone()
-                    title = tkinter.Label(self.bkcatalogue_summary, text= str(book[1]), font=font_small, fg=fc_label, bg=bg_label)
-                    author = tkinter.Label(self.bkcatalogue_summary, text= str(book[2]), font=font_small, fg=fc_label, bg=bg_label)
-                    publisher = tkinter.Label(self.bkcatalogue_summary, text= str(book[3]), font=font_small, fg=fc_label, bg=bg_label)
-                    price = tkinter.Label(self.bkcatalogue_summary, text= ("$" + str(book[4])), font=font_small, fg=fc_label, bg=bg_label)
-                    qty = tkinter.Label(self.bkcatalogue_summary, text= str(self.orderbooks[i]), font=font_small, fg=fc_label, bg=bg_label)
-                    title.grid(row = len(self.ordersummary) + 1, column = 1, sticky = tkinter.W)
-                    author.grid(row = len(self.ordersummary) + 1, column = 2, sticky = tkinter.W)
-                    publisher.grid(row = len(self.ordersummary) + 1, column = 3, sticky = tkinter.W)
-                    price.grid(row = len(self.ordersummary) + 1, column = 4, sticky = tkinter.W)
-                    qty.grid(row = len(self.ordersummary) + 1, column = 5)
+                    title = create_label_frame_small(self.bkcatalogue_summary, str(book[1]), False)
+                    author = create_label_frame_small(self.bkcatalogue_summary, str(book[2]), False)
+                    publisher = create_label_frame_small(self.bkcatalogue_summary, str(book[3]), False)
+                    price = create_label_frame_small(self.bkcatalogue_summary, str(book[4]), False)
+                    qty = create_label_frame_small(self.bkcatalogue_summary, str(self.orderbooks[i]), False)
+
+                    grid_ind = len(self.ordersummary) + 1
+                    title.grid(row = grid_ind, column = 1, sticky = tkinter.W)
+                    author.grid(row = grid_ind, column = 2, sticky = tkinter.W)
+                    publisher.grid(row = grid_ind, column = 3, sticky = tkinter.W)
+                    price.grid(row = grid_ind, column = 4, sticky = tkinter.W)
+                    qty.grid(row = grid_ind, column = 5)
             self.bar.pack(side=tkinter.RIGHT, pady=30, ipady =73, anchor = tkinter.N)
             self.canvas.pack(side=tkinter.TOP, pady = 35)
 
             self.total_head_summary = tkinter.Label(self.purchase_window_bot, text=("Subtotal(" + str(self.qtytotal) + " books): $" + str(round(self.subtotal, 2))),
                                             font=font_normal, fg=fc_label, bg=bg_label)
             self.total_head_summary.place(x=300, y=10)
-            self.backtocatalogue_button = ttk.Button(self.purchase_window_bot, command=backtoCatalogue, text="Back to Catalogue", style="TButton", width=20)
-            self.backtocatalogue_button.place(x=650, y=4)
+            self.backtocatalogue_button = create_button_xy(self.purchase_window_bot, "Back to Catalogue", backtoCatalogue, "TButton", 650, 4, 20)
 
-            self.ship_head = tkinter.Label(self.purchase_window_bot, text="Shipping Address:", font=font_small_bold, fg=fc_label, bg=bg_label)
-            self.ship_name_label = tkinter.Label(self.purchase_window_bot, text="Full Name:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_name_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-            self.ship_street_label = tkinter.Label(self.purchase_window_bot, text="Street:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_street_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-            self.ship_city_label = tkinter.Label(self.purchase_window_bot, text="City:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_city_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-            self.ship_state_label = tkinter.Label(self.purchase_window_bot, text="State:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_state_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-            self.ship_country_label = tkinter.Label(self.purchase_window_bot, text="Country:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_country_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
-            self.ship_zip_label = tkinter.Label(self.purchase_window_bot, text="Zipcode:", font=font_small, fg=fc_label, bg=bg_label)
-            self.ship_zip_entry = tkinter.Entry(self.purchase_window_bot, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=35)
+            self.ship_head = create_label_frame_small(self.purchase_window_bot, "Shipping Address:", True)
+            self.ship_name_label = create_label_frame_small(self.purchase_window_bot, "Full Name:", False)
+            self.ship_name_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
+            self.ship_street_label = create_label_frame_small(self.purchase_window_bot, "Street:", False)
+            self.ship_street_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
+            self.ship_city_label = create_label_frame_small(self.purchase_window_bot, "City:", False)
+            self.ship_city_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
+            self.ship_state_label = create_label_frame_small(self.purchase_window_bot, "State:", False)
+            self.ship_state_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
+            self.ship_country_label = create_label_frame_small(self.purchase_window_bot, "Country:", False)
+            self.ship_country_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
+            self.ship_zip_label = create_label_frame_small(self.purchase_window_bot, "ZipCode:", False)
+            self.ship_zip_entry = create_entry_frame_small(self.purchase_window_bot, width=35)
+
             self.ship_head.place(x=20, y=70)
             self.ship_name_label.place(x=20, y=50)
             self.ship_name_entry.place(x=86, y=51)
@@ -723,21 +734,18 @@ class BuyBooksGUI():
 
             self.subandtax = tkinter.Label(self.purchase_window_bot, text=("Subtotal: $" + str(round(self.subtotal, 2)) +
                                                                            "\nTax: $" + str(round(self.subtotal * 0.0625))), font=font_normal, fg=fc_label, bg=bg_label)
-            self.taxtotal = tkinter.Label(self.purchase_window_bot, text=("    Total: $" + str(round(self.subtotal, 2)+round(self.subtotal * 0.0625))), font=font_normal_bold, fg=fc_label, bg=bg_label)
             self.subandtax.place(x=500, y=70)
-            self.taxtotal.place(x=500, y=130)
+            self.taxtotal = create_label_frame(self.purchase_window_bot, ("    Total: $" + str(round(self.subtotal, 2)+round(self.subtotal * 0.0625))), 500, 130)
 
-            self.pay_head = tkinter.Label(self.purchase_window_bot, text="Payment Method:", font=font_small_bold, fg=fc_label, bg=bg_label)
+            self.pay_head = create_label_frame_small(self.purchase_window_bot, "Payment Method:", True)
             self.pay_head.place(x=20, y=210)
-            self.pay_method = tkinter.Label(self.purchase_window_bot, text=self.method, font=font_small, fg=fc_label, bg=bg_label)
-            self.pay_method.place(x=135, y=210)
-            self.pay_select_button = ttk.Button(self.purchase_window_bot, command=selectpayment, text="Select Payment Method", style="TButton", width=20)
-            self.pay_select_button.place(x=40, y=235)
 
-            self.confirm_button = ttk.Button(self.purchase_window_bot, command=checkout, text="Place Your Order", style="font_normal.TButton", width=20)
-            self.confirm_button.place(x=500, y=200)
-            self.pur_cancel_button = ttk.Button(self.purchase_window_bot, command=cancel, text="Cancel", style="TButton", width=15)
-            self.pur_cancel_button.place(x=555, y=240)
+            self.pay_method = create_label_frame_small(self.purchase_window_bot, self.method, True)
+            self.pay_method.place(x=135, y=210)
+
+            self.pay_select_button = create_button_xy(self.purchase_window_bot, "Select Payment Method", selectpayment, "TButton", 40, 235, 20)
+            self.confirm_button = create_button_xy(self.purchase_window_bot, "Place Your Order", checkout, "font_normal.TButton", 500, 200, 20)
+            self.pur_cancel_button = create_button_xy(self.purchase_window_bot, "Cancel", cancel, "TButton", 555, 240, 15)
 
             self.payinfo = []           
             
@@ -746,26 +754,28 @@ class BuyBooksGUI():
             
             
 
-        self.filterbooks_button = ttk.Button(self.selectbook_window_mid, command=filterbooks, text="Filter the Book Catalogue", style="TButton", width=30)
-        self.filterbooks_button.place(x=300.5, y=50)
-        self.filterreset_button = ttk.Button(self.selectbook_window_mid, command=filterreset, text="Filter Reset", style="TButton", width=15)
-        self.filterreset_button.place(x=528, y=25)
-        self.bookcatalogue_label = tkinter.Label(self.selectbook_window_mid, text="Book Catalogue", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        self.bookcatalogue_label.place(x=340, y=90)
-        self.title_label = tkinter.Label(self.selectbook_window_mid, text="Title=", font=font_small, fg=fc_label, bg=bg_label)
-        self.title_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-        self.author_label = tkinter.Label(self.selectbook_window_mid, text="Author=", font=font_small, fg=fc_label, bg=bg_label)
-        self.author_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-        self.publisher_label = tkinter.Label(self.selectbook_window_mid, text="Publisher=", font=font_small, fg=fc_label, bg=bg_label)
-        self.publisher_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=30)
-        self.price_label = tkinter.Label(self.selectbook_window_mid, text="Price=", font=font_small, fg=fc_label, bg=bg_label)
-        self.price_to = tkinter.Label(self.selectbook_window_mid, text="=<=", font=font_small, fg=fc_label, bg=bg_label)
-        self.price_min_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
-        self.price_max_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
-        self.available_label = tkinter.Label(self.selectbook_window_mid, text="Available=", font=font_small, fg=fc_label, bg=bg_label)
-        self.available_to = tkinter.Label(self.selectbook_window_mid, text="=<=", font=font_small, fg=fc_label, bg=bg_label)
-        self.available_min_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
-        self.available_max_entry = tkinter.Entry(self.selectbook_window_mid, bd=1, font=font_small, fg=fc_entry, bg=bg_entry, width=10)
+        self.filterbooks_button = create_button_xy(self.selectbook_window_mid, "Filter the Book Catalogue", filterbooks, "TButton", 300, 50, 30)
+        self.filterreset_button = create_button_xy(self.selectbook_window_mid, "Filter Reset", filterreset, "TButton", 528, 25, 15)
+
+        self.bookcatalogue_label = create_label_frame(self.selectbook_window_mid, "Book Catalogue", 340, 90)
+        self.title_label = create_label_frame_small(self.selectbook_window_mid, "Title=", False)
+        self.title_entry = create_entry_frame_small(self.selectbook_window_mid, width=30)
+
+        self.author_label = create_label_frame_small(self.selectbook_window_mid, "Author=", False)
+        self.author_entry = create_entry_frame_small(self.selectbook_window_mid, width=30)
+
+        self.publisher_label = create_label_frame_small(self.selectbook_window_mid, "Publisher=", False)
+        self.publisher_entry = create_entry_frame_small(self.selectbook_window_mid, width=30)
+
+        self.price_label = create_label_frame_small(self.selectbook_window_mid, "Price=", False)
+        self.price_to = create_label_frame_small(self.selectbook_window_mid, "=<=", False)
+        self.price_min_entry = create_entry_frame_small(self.selectbook_window_mid, width=10)
+        self.price_max_entry = create_entry_frame_small(self.selectbook_window_mid, width=10)
+
+        self.available_label = create_label_frame_small(self.selectbook_window_mid, "Available=", False)
+        self.available_to = create_label_frame_small(self.selectbook_window_mid, "=<=", False)
+        self.available_min_entry = create_entry_frame_small(self.selectbook_window_mid, width=10)
+        self.available_max_entry = create_entry_frame_small(self.selectbook_window_mid, width=10)
 
         #一文字 = x=7, y=22 （おおよそ）entry 219;1=7.3
         self.title_label.place(x=5, y=0)
@@ -787,14 +797,10 @@ class BuyBooksGUI():
         self.available_max_entry.insert(0, maxavailable)
         self.available_max_entry.place(x=425, y=25)
 
-        self.total_head = tkinter.Label(self.selectbook_window_bot, text=("Subtotal(" + str(self.qtytotal) + " books): $" + str(self.subtotal)), font=font_normal_bold, fg=fc_label, bg=bg_label)
-        self.total_head.place(x=270, y=10)
-        self.vieworder_button = ttk.Button(self.selectbook_window_bot, command=viewsummary, text="Proceed to Checkout", style="font_normal.TButton", width=20)
-        self.vieworder_button.place(x=310, y=45)
-        self.cartreset_button = ttk.Button(self.selectbook_window_bot, command=cartreset, text="Reset Cart", style="TButton", width=20)
-        self.cartreset_button.place(x=650, y=4)
-        self.sel_cancel_button = ttk.Button(self.selectbook_window_bot, command=cancel, text="Cancel", style="TButton", width=15)
-        self.sel_cancel_button.place(x=365, y=90)
+        self.total_head = create_label_frame(self.selectbook_window_bot, ("Subtotal(" + str(self.qtytotal) + " books): $" + str(self.subtotal)), 270, 10)
+        self.vieworder_button = create_button_xy(self.selectbook_window_bot, "Proceed to Checkout", viewsummary, "font_normal.TButton", 310, 45, 20)
+        self.cartreset_button = create_button_xy(self.selectbook_window_bot, "Reset Cart", cartreset, "TButton", 650, 4, 20)
+        self.sel_cancel_button = create_button_xy(self.selectbook_window_bot, "Cancel", cancel, "TButton", 365, 90, 15)
 
         self.selectbook_window_mid.place(x = 0, y = 0)
         self.selectbook_window_bot.place(x = 0, y = 375)
@@ -814,13 +820,7 @@ class UserInfoGUI():
         self.user_id = user_id
 
     #Set the appearance
-        self.userinfo_window = tkinter.Tk()
-        #Title of the application
-        self.userinfo_window.title("Update User Info")
-        #Geometry string is a standard way of describing the size and location of the window
-        # Set the size of the window (x and  y position of the root window)
-        self.userinfo_window.geometry(normal_geo)
-        self.userinfo_window.config(bg=bg_normal) #Background color
+        self.userinfo_window = create_window(self, "Update User Info", normal_geo)
 
     #Set the actions
         def edituserinfo():
@@ -834,34 +834,33 @@ class UserInfoGUI():
                                                            + "\nEmail: " + str(self.email_entry.get())))
             self.cursor.close()
             self.userinfo_window.destroy()
-            storemainGUI(self.user_id)
+            from main import StoreMainGUI
+            StoreMainGUI(self.user_id)
             
         def cancel():
             self.cursor.close()
             self.userinfo_window.destroy()
-            storemainGUI(self.user_id)
+            from main import StoreMainGUI
+            StoreMainGUI(self.user_id)
 
-    #Set the detail appearance    
-        self.userinfo_head = tkinter.Label(self.userinfo_window, text="User Info Update", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        # Creating a label for Password
-        self.pass_label = tkinter.Label(self.userinfo_window, text="Password:", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        # Creating a text entry box for Password
+    #Set the detail appearance
+        self.userinfo_head = create_title(self.userinfo_window, "User Info Update", 10)
+
+        self.pass_label = create_label(self.userinfo_window, "Password:", 5, 60)
         self.pass_entry = tkinter.Entry(self.userinfo_window, bd=1, font=font_normal, fg=fc_entry, bg=bg_entry, width=20)
-        # Creating a label for First Name
-        self.fname_label = tkinter.Label(self.userinfo_window, text="First Name:", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        # Creating a text entry box for First Name
+
+        self.fname_label = create_label(self.userinfo_window, "First Name:", 5, 90)
         self.fname_entry = tkinter.Entry(self.userinfo_window, bd=1, font=font_normal, fg=fc_entry, bg=bg_entry, width=20)
-        # Creating a label for Last Name
-        self.lname_label = tkinter.Label(self.userinfo_window, text="Last Name:", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        # Creating a text entry box for Last Name
+
+        self.lname_label = create_label(self.userinfo_window, "Last Name:", 5, 120)
         self.lname_entry = tkinter.Entry(self.userinfo_window, bd=1, font=font_normal, fg=fc_entry, bg=bg_entry, width=20)
-        # Creating a label for Email
-        self.email_label = tkinter.Label(self.userinfo_window, text="Email:", font=font_normal_bold, fg=fc_label, bg=bg_label)
-        # Creating a text entry box for Email
+
+        self.email_label = create_label(self.userinfo_window, "Email:", 5, 150)
         self.email_entry = tkinter.Entry(self.userinfo_window, bd=1, font=font_normal, fg=fc_entry, bg=bg_entry, width=20)
+
         # Creating buttons
-        self.save_button = ttk.Button(self.userinfo_window, command = edituserinfo, text = "Update Information", style="TButton", width=20)
-        self.cancel_button = ttk.Button(self.userinfo_window, command=cancel, text="Cancel", style="TButton", width=20)
+        self.save_button = create_button_xy(self.userinfo_window, "Update Information", edituserinfo, "TButton", 150, 190, 20)
+        self.save_button = create_button_xy(self.userinfo_window, "Cancel", cancel, "TButton", 150, 225, 20)
 
         self.cursor.execute('SELECT * FROM accounts WHERE user_id=?', [self.user_id,])
 
@@ -872,21 +871,12 @@ class UserInfoGUI():
         self.fname_entry.insert(0, self.userdata[2])
         self.lname_entry.insert(0, self.userdata[3])
         self.email_entry.insert(0, self.userdata[4])
-
-        self.userinfo_head.place(x=180, y=10)
         
-        self.pass_label.place(x=5, y=60)
-        self.fname_label.place(x=5, y=90)
-        self.lname_label.place(x=5, y=120)
-        self.email_label.place(x=5, y=150)
-            
         self.pass_entry.place(x=200, y=60)
         self.fname_entry.place(x=200, y=90)
         self.lname_entry.place(x=200, y=120)
         self.email_entry.place(x=200, y=150)
 
-        self.save_button.place(x=150, y=190)
-        self.cancel_button.place(x=150, y=225)
 
         self.style = ttk.Style()
         self.style.configure("TButton", font=font_normal, foreground=fg_button, background=bg_button, activeforeground=bg_entry, activebackground=fg_button)
