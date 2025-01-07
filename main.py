@@ -134,7 +134,7 @@ class LoginGUI:
         def crelines():
             self.m_window.title("Create New Account")
 
-            self.createacc_button.place_forget()
+            self.createlg_button.place_forget()
             self.loginlg_button.place_forget()
             self.creacc_window.place(relx=0.5,y=190,anchor='center')
 
