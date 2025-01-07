@@ -1,3 +1,4 @@
+#add fictional books and accounts data examples on bookstore.db for test
 import sqlite3
 
 db = sqlite3.connect("bookstore.db")
