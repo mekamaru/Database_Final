@@ -134,7 +134,7 @@ class LoginGUI:
         def crelines():
             self.m_window.title("Create New Account")
 
-            self.createlg_button.place_forget()
+            self.createacc_button.place_forget()
             self.loginlg_button.place_forget()
             self.creacc_window.place(relx=0.5,y=190,anchor='center')
 
@@ -184,8 +184,8 @@ class LoginGUI:
         self.createacc_button = create_button_xy(self.creacc_window, "Create Account", createacc, "TButton", 30, 110, 20)
         self.loginacc_button = create_button_xy(self.creacc_window, "Back to Login Screen", backtologin, "TButton", 260, 110, 20)
 
-        self.createacc_button = create_button_xy(self.login_window, "Create New Account", crelines, "TButton", 30, 70, 20)
-        self.createacc_button = create_button_xy(self.login_window, "Login", loginacc, "logout.TButton", 260, 70, 20)
+        self.createlg_button = create_button_xy(self.login_window, "Create New Account", crelines, "TButton", 30, 70, 20)
+        self.loginlg_button = create_button_xy(self.login_window, "Login", loginacc, "logout.TButton", 260, 70, 20)
 
         #Loop the window
         self.login_window.place(relx=0.5,y=130,anchor='center')
