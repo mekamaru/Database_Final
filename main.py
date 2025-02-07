@@ -300,24 +300,3 @@ class AdminGUI():
 
 if __name__ == "__main__":
     LoginGUI()
-
-        #Set the cursor for db
-        #self.cursor = db.cursor()
-
-        #Get User Info
-
-        #Set the appearance of main window
-        #Title the window
-        #Set geometry
-        #Set background color
-        #Place the window
-
-        #Set style
-
-        #Create frames
-
-        #Create labels and entries
-
-        #Set the actions on this GUI
-        #Create buttons
-        #Loop the window

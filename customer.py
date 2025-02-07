@@ -543,111 +543,116 @@ class BuyBooksGUI():
             elif self.payinfo == [] and self.method != "Cash (on Delivery)":
                 messagebox.showwarning(title = "ERROR", message = ("Payment Method is not selected"))
             else:
-                maxorderid = len(self.cursor.execute('SELECT * FROM orders').fetchall())
                 
-                f = open("orderconfirmation_" + self.user_id + "_" + str(maxorderid) +".txt", "w")
-                f.write("Order Confirmation\n==================================================================="
-                        +"\nOrdered Books:\n===================================================================")
-                for i in range(0, len(self.ordersummary)):
-                    book = self.cursor.execute('SELECT * FROM books WHERE book_id =?', [self.ordersummary[i][0],]).fetchone()
-                    f.write("\nTitle: " + str(book[1]) + "\nAuthor: " + str(book[2]) + "\nPublisher: " + str(book[3]) + "\nPrice: " + str(book[4]) + "\nQty: " + str(self.ordersummary[i][1]))
+                try:
+                    f = None
+                    
+                    db.execute("BEGIN TRANSACTION;")
+                    
+                    maxorderid = len(self.cursor.execute('SELECT * FROM orders').fetchall())
+                
+                    f = open("orderconfirmation_" + self.user_id + "_" + str(maxorderid) +".txt", "w")
+                    f.write("Order Confirmation\n==================================================================="
+                            +"\nOrdered Books:\n===================================================================")
+                    for i in range(0, len(self.ordersummary)):
+                        book = self.cursor.execute('SELECT * FROM books WHERE book_id =?', [self.ordersummary[i][0],]).fetchone()
+                        f.write("\nTitle: " + str(book[1]) + "\nAuthor: " + str(book[2]) + "\nPublisher: " + str(book[3]) + "\nPrice: " + str(book[4]) + "\nQty: " + str(self.ordersummary[i][1]))
+                        f.write("\n===================================================================")
+                        self.cursor.execute('UPDATE books SET available=?, sold=? WHERE book_id=?', [(int(book[5]) - self.ordersummary[i][1]), (int(book[6]) + self.ordersummary[i][1]), self.ordersummary[i][0]])
+                    
+                    f.write("\nCustomer Information:\n===================================================================")
+                    f.write("\nFull Name: " + str(self.ship_name_entry.get()) +
+                            "\nShipping Address:" +
+                            "\n Street: " + str(self.ship_street_entry.get()) +
+                            "\n City: " + str(self.ship_city_entry.get()) +
+                            "\n State: " + str(self.ship_state_entry.get()) +
+                            "\n Country: " + str(self.ship_country_entry.get()) +
+                            "\n Zip: " + str(self.ship_zip_entry.get()))
                     f.write("\n===================================================================")
-                    self.cursor.execute('UPDATE books SET available=?, sold=? WHERE book_id=?', [(int(book[5]) - self.ordersummary[i][1]), (int(book[6]) + self.ordersummary[i][1]), self.ordersummary[i][0]])
-                    
-                f.write("\nCustomer Information:\n===================================================================")
-                f.write("\nFull Name: " + str(self.ship_name_entry.get()) +
-                        "\nShipping Address:" +
-                        "\n Street: " + str(self.ship_street_entry.get()) +
-                        "\n City: " + str(self.ship_city_entry.get()) +
-                        "\n State: " + str(self.ship_state_entry.get()) +
-                        "\n Country: " + str(self.ship_country_entry.get()) +
-                        "\n Zip: " + str(self.ship_zip_entry.get()))
-                f.write("\n===================================================================")
-                f.write("\nPayment Information:\n===================================================================")
-                f.write("\nPayment Method: " + str(self.method))
-                if self.method == "Credit/Debit Card":
-                    f.write("\nName on Card: " + str(self.payinfo[1]) +
-                            "\nCard Number: " + str(self.payinfo[2]) +
-                            "\nCard Exp: " + str(self.payinfo[3]) + "/" + str(self.payinfo[4]) +
-                            "\nBilling Address:" +
-                            "\n Street: " + str(self.payinfo[5]) +
-                            "\n City: " + str(self.payinfo[6]) +
-                            "\n State: " + str(self.payinfo[7]) +
-                            "\n Country: " + str(self.payinfo[8]) +
-                            "\n Zip: " + str(self.payinfo[9]) +
-                            "\n Phone: " + str(self.payinfo[10]))
-                    self.cursor.execute('SELECT * FROM cards WHERE user_id=?', [self.user_id,])
-                    exist = len(self.cursor.fetchall())
-                    if exist == 0:
-                        if self.savecheck.get() == 1:
-                            self.cursor.execute('INSERT into cards values (?,?,?,?,?,?,?,?,?,?,?)', self.payinfo)
-                            db.commit()
-                    else:
-                        if self.savecheck.get() == 1:
-                            pinfoforupdate = self.payinfo[1:11]+[self.payinfo[0]]
-                            self.cursor.execute('UPDATE cards SET name=?, cardnumber=?, exp_month=?, exp_year=?,\
-                                                                  bill_street=?, bill_city=?, bill_state=?, bill_country=?,\
-                                                                  bill_zip=?, bill_phone=?\
-                                WHERE user_id=?', pinfoforupdate)
-                            db.commit()
+                    f.write("\nPayment Information:\n===================================================================")
+                    f.write("\nPayment Method: " + str(self.method))
+                    if self.method == "Credit/Debit Card":
+                        f.write("\nName on Card: " + str(self.payinfo[1]) +
+                                "\nCard Number: " + str(self.payinfo[2]) +
+                                "\nCard Exp: " + str(self.payinfo[3]) + "/" + str(self.payinfo[4]) +
+                                "\nBilling Address:" +
+                                "\n Street: " + str(self.payinfo[5]) +
+                                "\n City: " + str(self.payinfo[6]) +
+                                "\n State: " + str(self.payinfo[7]) +
+                                "\n Country: " + str(self.payinfo[8]) +
+                                "\n Zip: " + str(self.payinfo[9]) +
+                                "\n Phone: " + str(self.payinfo[10]))
+                        self.cursor.execute('SELECT * FROM cards WHERE user_id=?', [self.user_id,])
+                        exist = len(self.cursor.fetchall())
+                        if exist == 0:
+                            if self.savecheck.get() == 1:
+                                self.cursor.execute('INSERT into cards values (?,?,?,?,?,?,?,?,?,?,?)', self.payinfo)
                         else:
-                            self.cursor.execute('DELETE cards WHERE user_id=?', self.user_id)
-                            db.commit()
+                            if self.savecheck.get() == 1:
+                                pinfoforupdate = self.payinfo[1:11]+[self.payinfo[0]]
+                                self.cursor.execute('UPDATE cards SET name=?, cardnumber=?, exp_month=?, exp_year=?,\
+                                                                      bill_street=?, bill_city=?, bill_state=?, bill_country=?,\
+                                                                      bill_zip=?, bill_phone=?\
+                                    WHERE user_id=?', pinfoforupdate)
+                            else:
+                                self.cursor.execute('DELETE cards WHERE user_id=?', self.user_id)
                             
-                elif self.method == "Bank Check":
-                    f.write("\nName: " + str(self.payinfo[1]) +
-                            "\nBank Type: " + str(self.payinfo[2]) +
-                            "\nRouting Number: " + str(self.payinfo[3]) +
-                            "\nAccount Number: " + str(self.payinfo[4]))
-                    self.cursor.execute('SELECT * FROM checks WHERE user_id=?', [self.user_id,])
-                    exist = len(self.cursor.fetchall())
-                    if exist == 0:
-                        if self.savecheck.get() == 2:
-                            self.cursor.execute('INSERT into checks values (?,?,?,?,?)', self.payinfo)
-                            db.commit()
-                    else:
-                        if self.savecheck.get() == 2:
-                            pinfoforupdate = self.payinfo[1:5]+[self.payinfo[0]]
-                            self.cursor.execute('UPDATE checks SET name=?, acctype=?, routing=?, bankacc=? WHERE user_id=?', pinfoforupdate)
-                            db.commit()
+                    elif self.method == "Bank Check":
+                        f.write("\nName: " + str(self.payinfo[1]) +
+                                "\nBank Type: " + str(self.payinfo[2]) +
+                                "\nRouting Number: " + str(self.payinfo[3]) +
+                                "\nAccount Number: " + str(self.payinfo[4]))
+                        self.cursor.execute('SELECT * FROM checks WHERE user_id=?', [self.user_id,])
+                        exist = len(self.cursor.fetchall())
+                        if exist == 0:
+                            if self.savecheck.get() == 2:
+                                self.cursor.execute('INSERT into checks values (?,?,?,?,?)', self.payinfo)
                         else:
-                            self.cursor.execute('DELETE checks WHERE user_id=?', self.user_id)
-                            db.commit()
-                else:
-                    f.write("\nYou must pay when you receive the box.")
-
-                self.cursor.execute('UPDATE accounts SET saved_payment=? WHERE user_id=?', [self.savecheck.get(), self.user_id])
-                db.commit()
-                
-
-                orderqty = ""
-                for x in range(0, len(self.orderbooks)):
-                    if x == len(self.orderbooks)-1:
-                        orderqty = orderqty + str(self.orderbooks[x])
+                            if self.savecheck.get() == 2:
+                                pinfoforupdate = self.payinfo[1:5]+[self.payinfo[0]]
+                                self.cursor.execute('UPDATE checks SET name=?, acctype=?, routing=?, bankacc=? WHERE user_id=?', pinfoforupdate)
+                            else:
+                                self.cursor.execute('DELETE checks WHERE user_id=?', self.user_id)
                     else:
-                        orderqty = orderqty + str(self.orderbooks[x])+":"
-                    
-                total = (round(self.subtotal, 2)+round(self.subtotal * 0.0625))
-                
-                shipadd =  (str(self.ship_name_entry.get()) + ":" + str(self.ship_street_entry.get()) + ":" + 
-                           str(self.ship_city_entry.get()) + ":" + str(self.ship_state_entry.get()) + ":" + 
-                           str(self.ship_country_entry.get()) + ":" + str(self.ship_zip_entry.get()))
-                paymet = self.method
-                for y in range(0, len(self.payinfo)):
-                    paymet = paymet + ":" + str(self.payinfo[y])
-                
-                row = [str(maxorderid), self.user_id, orderqty, total, shipadd, paymet]
-                
-                self.cursor.execute('INSERT into orders values (?,?,?,?,?,?)', row)
-                db.commit()
-                    
-                f.close()
-                messagebox.showinfo(title="Thank You", message="You Purchase has been Completed!\nOrder Confirmation is saved as txt file on your file.\nThank You!")
+                        f.write("\nYou must pay when you receive the box.")
 
-                self.cursor.close()
-                self.selectbook_window.destroy()
-                from main import StoreMainGUI
-                StoreMainGUI(self.user_id)
+                    self.cursor.execute('UPDATE accounts SET saved_payment=? WHERE user_id=?', [self.savecheck.get(), self.user_id])
+                
+
+                    orderqty = ""
+                    for x in range(0, len(self.orderbooks)):
+                        if x == len(self.orderbooks)-1:
+                            orderqty = orderqty + str(self.orderbooks[x])
+                        else:
+                            orderqty = orderqty + str(self.orderbooks[x])+":"
+                    
+                    total = (round(self.subtotal, 2)+round(self.subtotal * 0.0625))
+                
+                    shipadd =  (str(self.ship_name_entry.get()) + ":" + str(self.ship_street_entry.get()) + ":" + 
+                               str(self.ship_city_entry.get()) + ":" + str(self.ship_state_entry.get()) + ":" + 
+                               str(self.ship_country_entry.get()) + ":" + str(self.ship_zip_entry.get()))
+                    paymet = self.method
+                    for y in range(0, len(self.payinfo)):
+                        paymet = paymet + ":" + str(self.payinfo[y])
+                
+                    row = [str(maxorderid), self.user_id, orderqty, total, shipadd, paymet]
+                
+                    self.cursor.execute('INSERT into orders values (?,?,?,?,?,?)', row)
+                    
+                    db.commit()
+                    messagebox.showinfo(title="Thank You", message="You Purchase has been Completed!\nOrder Confirmation is saved as txt file on your program's folder.\nThank You!")
+                    
+                except Exception as e:
+                    db.rollback()
+                    messagebox.showerror(title="ERROR", message=f"An error occurred during the purchase.\nPurchase isn't completed.\n\nError Details: {e}")
+
+                finally:
+                    if f:
+                        f.close()
+                    self.cursor.close()
+                    self.selectbook_window.destroy()
+                    from main import StoreMainGUI
+                    StoreMainGUI(self.user_id)
             
 
         def viewsummary():
