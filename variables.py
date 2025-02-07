@@ -41,8 +41,10 @@ multiframe_geo = f"{multiframe_w}x{multiframe_h}"
 db=sqlite3.connect("bookstore.db")
 
 def on_closing(window: tkinter.Tk):
+    window.quit()
     window.destroy()
     db.close()
+    
     print("Closing!: test")
     sys.exit()
 

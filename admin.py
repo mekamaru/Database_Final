@@ -183,15 +183,16 @@ class UserManageGUI:
                                                                    + "\nEmail: " + str(self.email_entry.get())
                                                                    + "\n------------------------------"))
                     self.acc_window.destroy()
-                    adminGUI()
+                    from main import AdminGUI
+                    AdminGUI()
                 else:
                     messagebox.showwarning(title="ERROR", message="This User ID has already exists.")
 
         def edituser():
-            row = [self.pass_entry.get(), self.fname_entry.get(), self.lname_entry.get(), self.email_entry.get(), self.saved_payment_entry.get(), self.user_id]
+            row = [self.pass_entry.get(), self.fname_entry.get(), self.lname_entry.get(), self.email_entry.get(), self.saved_payment_entry.get(), self.userid]
             self.cursor.execute('UPDATE accounts SET password=?, fname=?, lname=?, email=?, saved_payment=? WHERE user_id=?', row)
             db.commit()
-            messagebox.showinfo(title="Save", message= ("User is updated!----- \nUser ID: "+ str(self.user_id)
+            messagebox.showinfo(title="Save", message= ("User is updated!----- \nUser ID: "+ str(self.userid)
                                                            + "\nPassword: " + str(self.pass_entry.get())
                                                            + "\nFirstname: " + str(self.fname_entry.get())
                                                            + "\nLastname: " + str(self.lname_entry.get())
